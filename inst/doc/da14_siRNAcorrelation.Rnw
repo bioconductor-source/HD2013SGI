@@ -1,0 +1,78 @@
+
+\section{Correlation of interaction profiles for different siRNA designs of the same gene}\label{siRNAcorrelation}
+\subsection{Preliminaries}
+
+<<siRNAcorrelation1>>=
+library(HD2013SGI)
+
+data("Interactions",package="HD2013SGI")
+data("mainEffects",package="HD2013SGI")
+
+dir.create(file.path("result","Figures"), recursive=TRUE)
+dir.create(file.path("result","data"), recursive=TRUE)
+@
+
+\subsection{Correlation of interaction profiles for different siRNA designs of the same gene}
+
+$\pi$-scores are summarized over two replicates. Pearson correlation coefficients are computed for interaction profiles for each pair of siRNA and saved in the matrix $C$.
+<<siRNAcorrelation2>>=
+PI = Interactions$piscore
+for (k in 1:dim(PI)[5]) {
+  PI[,,,,k,] = PI[,,,,k,] / Interactions$scale[k]
+}
+PI = (PI[,,,,,1]+PI[,,,,,2]) / 2
+PI[is.na(Interactions$padj)] = NA_real_
+PI2 = PI
+dim(PI2) = c(prod(dim(PI)[1:2]),prod(dim(PI)[3:5]))
+C = cor(t(PI2),use="pairwise.complete")
+@
+
+Correlation coefficients for siRNA pairs, where both siRNA target the same gene are extracted.
+<<siRNAcorrelation3>>=
+IDX = matrix(NA_integer_, nr=dim(Interactions$piscore)[1],nc=2)
+IDX[,1] = 1:dim(Interactions$piscore)[1]
+IDX[,2] = IDX[,1] + dim(Interactions$piscore)[1]
+cc = C[IDX]
+@
+
+Next, we count the number of significant interactions per target gene to select genes that show a strong interaction profile. 
+<<siRNAcorrelation4>>=
+PI3 = PI
+dim(PI3) = c(dim(PI)[1],dim(PI)[2],prod(dim(PI)[3:5]))
+th=5
+PI2 = PI3
+PI2[abs(PI2) < th] = NA_real_
+S = sign(PI2)
+nrOfInteractionsPerTarget = apply(!is.na(S[,1,] == S[,2,]),1,sum,na.rm=TRUE)
+@
+
+We plot the density of correlation coefficients of interaction profiles between siRNAs against different genes and between siRNAs targeting the same gene.
+<<siRNAcorrelation5>>=
+differentGenes = upper.tri(C)
+differentGenes[IDX] = FALSE
+differentGenes[IDX[,2:1]] = FALSE
+sel = which(nrOfInteractionsPerTarget >= 5)
+
+pdf(file.path("result","Figures","multidensityWithinDesignCorrelation.pdf"),
+    height=5)
+multidensity(list(againstDifferentGenes = C[differentGenes],
+                  againstSameGene = cc[sel]),
+             legend = list(
+               x = "topleft",
+               legend = c("siRNA against different genes",
+                          "siRNA against same gene"),
+               fill = brewer.pal(9,"Set1")[1:2],bty="n"),
+             xlim=c(-1,1),xlab="Correlation between siRNA designs",lwd=3)
+rug(cc[sel])
+dev.off()
+@
+\begin{center}
+\includegraphics[width=0.8\textwidth]{result/Figures/multidensityWithinDesignCorrelation.pdf}
+\end{center}
+
+Save the number of interactions per target gene.
+<<siRNAcorrelation6>>=
+save(nrOfInteractionsPerTarget, 
+     file=file.path("result","data","nrOfInteractionsPerTarget.rda"))
+@
+

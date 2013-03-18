@@ -1,0 +1,132 @@
+
+\section{Distribution of positive and negative interactions}\label{distributionOfInteractions}
+\subsection{Preliminaries}
+
+<<distributionOfInteractions1>>=
+library(HD2013SGI)
+
+data("Interactions",package="HD2013SGI")
+data("mainEffects",package="HD2013SGI")
+data("nrOfInteractionsPerTarget",package="HD2013SGI")
+
+dir.create(file.path("result","Figures"),showWarnings=FALSE,recursive=TRUE)
+dir.create(file.path("result","additional"),showWarnings=FALSE,recursive=TRUE)
+
+@
+
+\subsection{Distribution of interactions}
+Count the number of positive and negative interactions for each phenotypic feature.
+<<distributionOfInteractions2>>=
+PI = Interactions$piscore
+PI = (PI[,,,,,1]+PI[,,,,,2]) / 2
+
+npos = rep(NA_integer_, dim(PI)[5])
+nneg = rep(NA_integer_, dim(PI)[5])
+for (i in 1:dim(PI)[5]) {
+  I = which(Interactions$padj[,,,,i] <= 0.01)
+  pi = (PI[,,,,i])[I]
+  npos[i] = sum(pi >= 0)
+  nneg[i] = sum(pi < 0)
+}
+I = order(-(npos+nneg))
+npos = npos[I]
+nneg = nneg[I]
+pdf(file.path("result","Figures","distributionOfInteractions.pdf"),
+    width=5,height=5)
+barplot(rbind(npos,nneg),beside=TRUE,
+        col=HD2013SGI:::Colors[c(3,1)],
+        xlab="phenotypic features",ylab="number of interactions")
+legend("topright",legend=c("pos. interactions", "neg. interactions"),
+       fill=HD2013SGI:::Colors[c(3,1)])
+dev.off()
+@
+
+\begin{center}
+\includegraphics[width=0.7\textwidth]{result/Figures/distributionOfInteractions.pdf}
+\end{center}
+
+\subsection{Dependency of main effects compared}
+
+<<distributionOfInteractions3>>=
+PI = Interactions$piscore
+PI = (PI[,,,,,1]+PI[,,,,,2]) / 2
+
+MT = apply(mainEffects$target[mainEffects$Anno$target$group == "sample",,,,],
+           c(1,4),mean,na.rm=TRUE)
+
+npos = matrix(NA_integer_, nrow=nrow(MT),ncol=dim(PI)[5])
+nneg = matrix(NA_integer_, nrow=nrow(MT),ncol=dim(PI)[5])
+pdf(file.path("result","additional",
+              "interactionsAsFunctionsOfTargetMainEffect.pdf"),
+    width=5,height=10)
+for (i in 1:dim(PI)[5]) {
+  par(mfrow=c(2,1))
+  plot(NA, xlim=range(MT[,1]), ylim=range(PI[,,,,i]),
+       xlab="target gene main effect (cell number)",
+       ylab="pi-score",
+       main=mainEffects$Anno$phenotype[i])
+  for (g in 1:nrow(MT)) {
+    I = which(Interactions$padj[g,,,,i] <= 0.01)
+    pi = (PI[g,,,,i])[I]
+    points(rep(MT[g,1],length(pi)),pi,pch=20,cex=0.4)
+  }
+  plot(NA, xlim=range(MT[,i]), ylim=range(PI[,,,,i]),
+       xlab=sprintf("target gene main effect (%s)",
+                    mainEffects$Anno$phenotype[i]), ylab="pi-score",
+       main=mainEffects$Anno$phenotype[i])
+  for (g in 1:nrow(MT)) {
+    I = which(Interactions$padj[g,,,,i] <= 0.01)
+    pi = (PI[g,,,,i])[I]
+    points(rep(MT[g,i],length(pi)),pi,pch=20,cex=0.4)
+  }
+}
+dev.off()
+
+@
+\includegraphics[width=0.5\textwidth]{result/additional/interactionsAsFunctionsOfTargetMainEffect.pdf}
+
+
+<<distributionOfInteractions4>>=
+PI = Interactions$piscore
+PI = (PI[,,,,,1]+PI[,,,,,2]) / 2
+
+MQ = apply(mainEffects$query,
+           c(2,4),mean,na.rm=TRUE)
+
+npos = matrix(NA_integer_, nrow=nrow(MQ),ncol=dim(PI)[5])
+nneg = matrix(NA_integer_, nrow=nrow(MQ),ncol=dim(PI)[5])
+pdf(file.path("result","additional",
+              "interactionsAsFunctionsOfQueryMainEffect.pdf"),
+    width=5,height=10)
+for (i in 1:dim(PI)[5]) {
+  par(mfrow=c(2,1))
+  npos = rep(0,20)
+  nneg = rep(0,20)
+  for (g in 1:nrow(MQ)) {
+    I = which(Interactions$padj[,,g,,i] <= 0.01)
+    pi = (PI[,,g,,i])[I]
+    npos[g] = sum(pi >= 0)
+    nneg[g] = sum(pi < 0)
+  }
+  plot(MQ[,1],npos,type="p",pch=20,lwd=3,col="orange",
+       ylim=c(-max(nneg),max(npos)),
+       ylab="number of interactions (blue: neg, yellow: pos.)", 
+       xlab="query gene main effect (cell number)",
+       main=mainEffects$Anno$phenotype[i])
+  points(MQ[,1],-nneg,type="p",pch=20,lwd=3,col="blue")
+  abline(h=0.0)
+
+  plot(MQ[,i],npos,type="p",pch=20,lwd=3,col="orange",
+       ylim=c(-max(nneg),max(npos)),
+       ylab="number of interactions (blue: neg, yellow: pos.)",
+       xlab=sprintf("query gene main effect (%s)",
+                    mainEffects$Anno$phenotype[i]),
+       main=mainEffects$Anno$phenotype[i])
+  points(MQ[,i],-nneg,type="p",pch=20,lwd=3,col="blue")
+  abline(h=0.0)
+}
+dev.off()
+
+@
+\includegraphics[width=0.5\textwidth]{result/additional/interactionsAsFunctionsOfQueryMainEffect.pdf}
+

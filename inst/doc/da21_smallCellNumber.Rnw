@@ -1,0 +1,354 @@
+
+\section{Simulation of small cell number data}\label{smallCellNumber}
+\subsection{Preliminaries}
+
+<<smallCellNumber1>>=
+library(HD2013SGI)
+
+dir.create(file.path("result","Figures"),recursive=TRUE,showWarnings=FALSE)
+
+data("featuresPerWell", package="HD2013SGI")
+data("TargetAnnotation",package="HD2013SGI")
+data("QueryAnnotation",package="HD2013SGI")
+data("datamatrix", package="HD2013SGI")
+@
+
+\subsection{Convert data from plate order to SGI-array}
+The simulation of an genetic interaction experiment with smaller cell numbers follows the scripts in 'data conversion' and 'data processing of main data'.
+
+At first the plate barcodes are parsed.
+<<smallCellNumber2>>=
+plates = featuresPerWell$Anno[seq(1,231840,by=4*23*15),"plate"]
+platenr = substr(plates,1,3)
+queryGroup = rep("sample",168)
+queryGroup[161:168] = "negControl"
+
+r = substr(plates,4,10000)
+
+S = 1:160
+N = 161:168
+targetDesign = sapply(strsplit(r,split="[QN]"),function(x) { x[1] } )
+targetDesign[targetDesign == "CI"] = 1
+targetDesign[targetDesign == "CII"] = 2
+targetDesign = as.integer(targetDesign)
+
+r = sapply(strsplit(r,split="[QN]"),function(x) { x[2] } )
+queryGene = rep("NegControl",168)
+queryGene[S] = substr(r[S],1,2)
+
+r[S] = substr(r[S],3,100)
+
+queryDesign = sapply(strsplit(r,split="[R]"),function(x) { x[1] } )
+queryDesign[queryDesign == "I"] = 1
+queryDesign[queryDesign == "II"] = 2
+queryDesign = as.integer(queryDesign)
+
+replicate = sapply(strsplit(r,split="[R]"),function(x) { x[2] } )
+replicate[replicate == "I"] = 1
+replicate[replicate == "II"] = 2
+replicate = as.integer(replicate)
+
+PlateAnnotation = data.frame(plate = plates,
+                             targetDesign = targetDesign,
+                             queryGroup = queryGroup,
+                             queryGene = queryGene,
+                             queryDesign = queryDesign, 
+                             replicate = replicate,
+                             stringsAsFactors=FALSE)
+
+qnames = unique(PlateAnnotation$queryGene[ 
+                  PlateAnnotation$queryGroup=="sample" ])
+nq = length(qnames)
+@
+
+The data is converted from the screen plate layout to a multi-dimensional array.
+<<smallCellNumber2>>=
+D = array(0.0, dim=c(field=4,col=23,row=15,
+                     features=dim(featuresPerWell$data)[2],
+                     targetDesign=2,
+                     query=nq,queryDesign=2,replicate=2))
+dimnames(D) = list(field=1:4,col=1:23,row=LETTERS[2:16],
+                   features=dimnames(featuresPerWell$data)[[2]],
+                   targetDesign=1:2,
+                   queryGene=qnames,queryDesign=1:2,replicate=1:2)
+z=0
+for (td in 1:2) {
+  for (q in 1:nq) {
+    for (qd in 1:2) {
+      for (r in 1:2) {
+        plate = PlateAnnotation$plate[ 
+          which((PlateAnnotation$targetDesign == td) &
+          (PlateAnnotation$queryGene == qnames[q]) &
+          (PlateAnnotation$queryDesign == qd) &
+          (PlateAnnotation$replicate == r) ) ]
+        z=z+1
+        I = which(featuresPerWell$Anno$plate == plate)
+        D[,,,,td,q,qd,r] = as.vector(featuresPerWell$data[I,])
+      }
+    }
+  }
+}
+D[is.na(D)] = 0.0
+@
+
+The data is summarized by the mean value 
+\begin{enumerate}
+\item considering only one imaging field per well,
+\item considering two imaging fields per well,
+\item considering all four imaging fields per well.
+\end{enumerate}
+<<smallCellNumber2>>=
+Dsub1 = D[1,,,,,,,]
+Dsub2 = (D[1,,,,,,,] + D[2,,,,,,,])/2
+D = (D[1,,,,,,,] + D[2,,,,,,,] + D[3,,,,,,,] + D[4,,,,,,,])/4
+
+D = aperm(D,c(1,2,4,5,6,3,7))
+dn = dimnames(D)
+dim(D) = c(prod(dim(D)[1:2]),dim(D)[3:7])
+dimnames(D) = c(list(targetGene = sprintf("%s%d",rep(LETTERS[2:16],each=23),
+                                            rep(1:23,times=15))),
+                   dn[3:7])
+
+Dsub1 = aperm(Dsub1,c(1,2,4,5,6,3,7))
+dim(Dsub1) = c(prod(dim(Dsub1)[1:2]),dim(Dsub1)[3:7])
+dimnames(Dsub1) = dimnames(D)
+
+Dsub2 = aperm(Dsub2,c(1,2,4,5,6,3,7))
+dim(Dsub2) = c(prod(dim(Dsub2)[1:2]),dim(Dsub2)[3:7])
+dimnames(Dsub2) = dimnames(D)
+
+datamatrixfullsub = list(Dsub1 = Dsub1, Dsub2 = Dsub2, Dsub4 = D)
+@
+
+Get indices for different sets of experiments (samples, controls, ...).
+
+<<smallCellNumber3>>=
+IndexSAMPLE = which(TargetAnnotation$group == "sample")
+IndexCTRL = which(TargetAnnotation$group == "SingleKDctrl")
+IndexNEG = which(TargetAnnotation$group == "negctrl")
+IndexSAMPLENEG = c(IndexSAMPLE, IndexNEG)
+@
+
+Set the color value for controls.
+<<smallCellNumber4>>=
+colCTRL = rep("gray", nrow(TargetAnnotation))
+colCTRL[TargetAnnotation$group == "SingleKDctrl"] = "royalblue"
+colCTRL[TargetAnnotation$group == "negctrl"] = "red"
+@
+
+\subsection{Transform features and screen normalization}
+A function for a generalized log transformation.
+<<SCNTransformationAndNormalization1>>=
+logtrafo <- function(x,c) {
+  log2((x+sqrt(x^2+c^2))/2)
+}
+@
+
+Transform all features with a generalized log transformation. A 3 percent quantile is used as an additive constant in the glog transformation. The same constant is used for the glog-transformation of all three data sets.
+
+<<SCNTransformationAndNormalization2>>=
+
+for (i in 1:dim(D)[5]) {
+  m = quantile(D[,,,,i,],probs=0.03,na.rm=TRUE)
+  D[,,,,i,] = logtrafo(D[,,,,i,],m)
+  Dsub1[,,,,i,] = logtrafo(Dsub1[,,,,i,],m)
+  Dsub2[,,,,i,] = logtrafo(Dsub2[,,,,i,],m)
+}
+@
+
+Normalize median per plate and feature to compensate for global differences between replicates and siRNA designs.
+<<SCNTransformationAndNormalization3>>=
+normalize <- function(D) {
+  M = apply(D,c(2:6),median,na.rm=TRUE)
+  M2 = apply(M, c(2,4), mean)
+  M2 = rep(M2, times=8)
+  dim(M2) = dim(M)[c(2,4,1,3,5)]
+  M2 = aperm(M2,c(3,1,4,2,5))
+  M = M - M2
+  M = rep(M[], each=dim(D)[1])
+  dim(M) = dim(D)
+  D = D - M
+  D
+}
+
+D <- normalize(D)
+Dsub1 <- normalize(Dsub1)
+Dsub2 <- normalize(Dsub2)
+
+@
+
+Subtract median and divide by median deviation per feature.
+<<SCNTransformationAndNormalization4>>=
+for (i in 1:dim(D)[5]) {
+  D[,,,,i,] = (D[,,,,i,] - median(D[,,,,i,],na.rm=TRUE)) / 
+    mad(D[,,,,i,],na.rm=TRUE)
+}
+
+for (i in 1:dim(Dsub1)[5]) {
+  Dsub1[,,,,i,] = (Dsub1[,,,,i,] - median(Dsub1[,,,,i,],na.rm=TRUE)) / 
+    mad(Dsub1[,,,,i,],na.rm=TRUE)
+}
+
+for (i in 1:dim(Dsub2)[5]) {
+  Dsub2[,,,,i,] = (Dsub2[,,,,i,] - median(Dsub2[,,,,i,],na.rm=TRUE)) / 
+    mad(Dsub2[,,,,i,],na.rm=TRUE)
+}
+
+@
+
+\subsection{Quality control of features}
+The dimension of the data cube before quality control is: \Sexpr{paste(dim(D),collapse=" x ")} (targets x siRNA designs x queries x designs x features x replicates).
+
+Take the mean over all four siRNA design pairs and compute for each feature the Pearson correlation between first and second replicate. 
+<<SCNqualityControlFeatures1>>=
+C = rep(NA_real_,dim(D)[5])
+D2 = (D[,1,,1,,] + D[,2,,1,,] + D[,1,,2,,] + D[,2,,2,,]) / 4
+D2sub1 = (Dsub1[,1,,1,,] + Dsub1[,2,,1,,] + Dsub1[,1,,2,,] + Dsub1[,2,,2,,]) / 4
+D2sub2 = (Dsub2[,1,,1,,] + Dsub2[,2,,1,,] + Dsub2[,1,,2,,] + Dsub2[,2,,2,,]) / 4
+for (i in 1:dim(D)[5]) {
+  C[i] = cor(as.vector(D2[IndexSAMPLE,,i,1]),as.vector(D2[IndexSAMPLE,,i,2]))
+}
+@
+
+Select all features with a correlation of at least 0.6. The number of features passing quality control is \Sexpr{sum(C >= 0.6, na.rm=TRUE)} out of \Sexpr{dim(D)[5]}. The same features as in the main analysis are selected in all three simulated cases.
+<<SCNqualityControlFeatures5>>=
+I = which(C >= 0.6)
+D = D[,,,,I,,drop=FALSE]
+Dsub1 = Dsub1[,,,,I,,drop=FALSE]
+Dsub2 = Dsub2[,,,,I,,drop=FALSE]
+@
+
+The dimension of the data cube is now: \Sexpr{paste(dim(D),collapse=" x ")}  (targets x siRNA designs x queries x designs x features x replicates).
+ 
+\subsection{Quality control of siRNA designs}
+
+For each target siRNA the phenotypic profiles are summarized over two query siRNA and two replicates.
+<<SCNqualityControlsiRNA1>>=
+D1 = (D[,,,1,,1] + D[,,,1,,2] + D[,,,2,,1] + D[,,,2,,2])/4
+@
+
+For each target gene the Pearson correlation coefficient is computed for phenotypic profiles between the two siRNA designs separately for each feature. The mean of correlation coefficients over all features is reported for each target gene.
+<<SCNqualityControlsiRNA2>>=
+Cdesign1 = rep(NA_real_,dim(D)[1])
+for (k in 1:dim(D)[5]) {
+  for (i in 1:dim(D)[1]) {
+    Cdesign1[i] = cor(as.vector(D1[i,1,,k]),as.vector(D1[i,2,,k]))
+  }
+  if ( k == 1) {
+    Cdesign1all = Cdesign1
+  } else {
+    Cdesign1all = Cdesign1all + Cdesign1
+  }
+}
+Cdesign1all = Cdesign1all / dim(D)[5]
+@
+
+All gene with a correlation of the phenotypic profiles of at least 0.7 are selected for further analysis. The number of target genes passing quality control is \Sexpr{sum(Cdesign1all[IndexSAMPLE] >= 0.7,na.rm=TRUE)} out of \Sexpr{length(IndexSAMPLE)}. Additionally, \Sexpr{length(IndexNEG)} negative control target siRNAs selected. The same target genes as in the main analysis are selected for all three simulated cases.
+
+<<SCNqualityControlsiRNA4>>=
+I = IndexSAMPLE[Cdesign1all[IndexSAMPLE] >= 0.7]
+I = c(I, IndexNEG)
+D = D[I,,,,,,drop=FALSE]
+Dsub1 = Dsub1[I,,,,,,drop=FALSE]
+Dsub2 = Dsub2[I,,,,,,drop=FALSE]
+TargetAnnotation = TargetAnnotation[I,]
+@
+The dimension of the data cube is now: \Sexpr{paste(dim(D),collapse=" x ")}  (targets x siRNA designs x queries x designs x features x replicates).
+
+\subsection{Selection of non-redundant features}
+
+<<SCNfeatureSelection3,results=hide>>=
+data(stabilitySelection, package="HD2013SGI")
+Sel = stabilitySelection$ratioPositive >= 0.5
+@
+
+A set of \Sexpr{sum(Sel)} features is shown to contain non-redundant information.The criteria for feature selection are saved and the features are selected. The same features as in the main analysis are selected for all three simulated datasets.
+<<SCNfeatureSelection7>>=
+D = D[,,,,stabilitySelection$selected[Sel],,drop=FALSE]
+dimnames(D)[[1]] = TargetAnnotation$Symbol
+dimnames(D)[[3]] = QueryAnnotation$Symbol
+Dsub1 = Dsub1[,,,,stabilitySelection$selected[Sel],,drop=FALSE]
+Dsub2 = Dsub2[,,,,stabilitySelection$selected[Sel],,drop=FALSE]
+dimnames(Dsub1) = dimnames(D)
+dimnames(Dsub2) = dimnames(D)
+@
+
+After selecting \Sexpr{sum(Sel)} features, the dimension of the data cube is now: \Sexpr{paste(dim(D),collapse=" x ")}  (targets x siRNA designs x queries x designs x features x replicates).
+
+\subsection{Pairwise interaction scores}
+Pairwise interaction scores ($\pi$=scores) are estimated using a robust linear fit. The query main effects are lifted such that they equal to the mean of the single knock down measurements of the query genes (target siRNA is a scrambled sequence serving as negative control).
+<<SCNpairwiseInteractionScores1>>=
+getInteractions <- function(D) {
+  pimatrix = datamatrix
+  pimatrix$D[] = NA_real_
+  mainEffects = list(target = D[,,1,,,],
+                     query = D[1,,,,,],
+                     overall = D[1,,1,,,],
+                     Anno = datamatrix$Anno)
+
+  for (i in 1:2) {
+    for (j in 1:2) {
+      for (k in 1:dim(D)[5]) {
+        for (l in 1:2) {
+          MP = HD2013SGImaineffects(D[,i,,j,k,l],
+              TargetNeg=which(TargetAnnotation$group == "negctrl"))
+          pimatrix$D[,i,,j,k,l] = MP$pi
+          mainEffects$target[,i,j,k,l] = MP$targetMainEffect
+          mainEffects$query[i,,j,k,l] = MP$queryMainEffect
+          mainEffects$overall[i,j,k,l] = MP$neg
+        }
+      }
+    }
+  }
+  D = pimatrix$D
+  PADJ = D[pimatrix$Anno$target$group == "sample",,,,,1]
+  s = rep(NA_real_, dim(D)[5])
+  for (i in 1:dim(D)[5]) {
+    Data = D[,,,,i,]
+    Data = Data[pimatrix$Anno$target$group == "sample",,,,]
+    d = dim(Data)
+    dim(Data) = c(prod(d[1:4]),prod(d[5]))
+    Data[abs(Data[,1]-Data[,2]) > 4*mad(Data[,1]-Data[,2],center=0.0),] = NA_real_
+
+    s[i] = median(apply(Data,1,sd), na.rm=TRUE)
+    padj = rep(NA_real_, nrow(Data))
+    K = which(apply(!is.na(Data),1,all))
+    fit = eBayes(lmFit(Data[K,]))
+    padj[K] = p.adjust(fit$p.value, method="BH")
+    PADJ[,,,,i] = padj
+    cat("i=",i," nr int (1%) = ",sum(padj <= 0.01,na.rm=TRUE)/nrow(Data),
+        " nr int (3%) = ",sum(padj <= 0.03,na.rm=TRUE)/nrow(Data),"\n")
+  }
+  PI = pimatrix$D
+  PI = PI[pimatrix$Anno$target$group == "sample",,,,,]
+  Interactions = list(piscore = PI,
+                      scale = s,
+                      padj = PADJ,
+                      Anno = pimatrix$Anno)
+  Interactions$Anno$target = Interactions$Anno$target[
+              pimatrix$Anno$target$group == "sample",]
+  Interactions
+}
+
+InteractionsSub4 = getInteractions(D)
+InteractionsSub1 = getInteractions(Dsub1)
+InteractionsSub2 = getInteractions(Dsub2)
+@
+
+The number of significantly interacting siRNA pairs is plotted.
+
+<<SCNnumbers>>=
+field1 = sum(InteractionsSub1$padj <= 0.01,na.rm=TRUE)
+field2 = sum(InteractionsSub2$padj <= 0.01,na.rm=TRUE)
+field4 = sum(InteractionsSub4$padj <= 0.01,na.rm=TRUE)
+pdf(file.path("result","Figures","subsamplingNrInteractions.pdf"),
+    height=5,width=5)
+barplot(c(field1,field2,field4),
+        names.arg=c("1775\ncells","3550\ncells","7100\ncells"),
+        ylab="number of interactions",main="")
+dev.off()
+@
+\begin{center}
+\includegraphics[width=0.5\textwidth]{result/Figures/subsamplingNrInteractions.pdf}
+\end{center}
+

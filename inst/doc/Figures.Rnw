@@ -1,0 +1,59 @@
+%\VignetteIndexEntry{Figures}
+%\VignettePackage{HD2013SGI}
+\documentclass[10pt,a4paper,oneside]{article}
+
+\newcommand{\thetitle}{Mapping genetic interactions in human cancer cells by RNAi -- Laufer, Fischer et al., 2013}
+%\usepackage[pdftitle={\thetitle},pdfauthor={Bernd Fischer}]{whbiocvignette}
+\usepackage{whbiocvignette}
+
+\usepackage{calc}
+
+\newcommand{\mycaption}[1]{
+  \begin{minipage}[t][10mm][b]{\linewidth}
+   \centering \huge\textbf{Figure #1}
+  \end{minipage}
+}
+
+%\pagestyle{empty}
+\title{\textsf{\textbf{\thetitle}}}
+\author{Bernd Fischer\\[1em]European Molecular Biology Laboratory (EMBL),\\ Heidelberg, Germany\\
+\texttt{bernd.fischer@embl.de}}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+This package contains the data and R-code for statistical analysis for
+the paper HD2013SGI by  Laufer, Fischer, et al.. In Section \ref{dataAccess} the
+access to the data is described. Section \ref{Figures} shows the
+figures from the original publication and gives the link to the
+section describing the analysis and showing the R-code for analysis
+and plotting of the figure. The subsequent sections contain the
+statistical analysis in the order in which it was executed. The R-code
+within each section can be executed independent from each
+other. Intermediate results from each section are available as data
+object.
+
+To install the package you first need to install a current version of
+R and afterwards install this package by typing
+<<installation,eval=FALSE>>=
+source("http://bioconductor.org/biocLite.R")
+biocLite("HD2013SGI")
+@
+
+\SweaveInput{src/da01_dataAccess.Rnw}
+\SweaveInput{src/da02_figures.Rnw}
+\SweaveInput{src/da11_convertData.Rnw}
+\SweaveInput{src/da12_rawDataProcessing.Rnw}
+\SweaveInput{src/da13_exampleInteractions.Rnw}
+\SweaveInput{src/da14_siRNAcorrelation.Rnw}
+\SweaveInput{src/da15_heatmaps.Rnw}
+\SweaveInput{src/da21_smallCellNumber.Rnw}
+\SweaveInput{src/da22_distributionOfInteractions.Rnw}
+\SweaveInput{src/da23_scatterplots.Rnw}
+\SweaveInput{src/da24_screenplots.Rnw}
+\SweaveInput{src/da25_table.Rnw}
+
+\end{document}

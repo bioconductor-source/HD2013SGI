@@ -1,0 +1,12 @@
+
+## import(zlibbioc)
+
+# exportPattern("^[^\\.]")
+
+# export(HD2013SGIColors)
+# export(HD2013SGIcolBY)
+export(HD2013SGImaineffects)
+export(HD2013SGIselectByStability)
+export(HD2013SGIorderDim)
+export(HD2013SGIHeatmapHuman)
+

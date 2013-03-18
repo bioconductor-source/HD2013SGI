@@ -1,0 +1,44 @@
+
+\section{Main result table}\label{mainResultTable}
+\subsection{Preliminaries}
+
+<<mainResultTable1>>=
+library(HD2013SGI)
+
+data("Interactions",package="HD2013SGI")
+
+dir.create(file.path("result","Tables"),
+           recursive=TRUE,showWarnings=FALSE)
+@
+
+\subsection{Main table of interaction scores}
+
+<<mainResultTable2>>=
+PI = Interactions$piscore
+PI = (PI[,,,,,1] + PI[,,,,,2])/2
+PADJ = Interactions$padj
+PI[is.na(PADJ)] = NA
+
+dim(PI) = c(prod(dim(PI)[1:4]),dim(PI)[5])
+dim(PADJ) = c(prod(dim(PADJ)[1:4]),dim(PADJ)[5])
+
+V = cbind(PI, PADJ)
+V = V[,rep(1:11,each=2)+rep(c(0,11),times=11)]
+colnames(V) = sprintf("%s.%s",rep(c("pi-score","padj"),times=11),
+        rep(HD2013SGI:::humanReadableNames[ Interactions$Anno$phenotype ],
+                          each=2))
+
+target = rep(Interactions$Anno$target$Symbol,2*20*2)
+query = rep(rep(Interactions$Anno$query$Symbol,times=2),each=282*2)
+targetDesign = rep(rep(c("#1","#2"),times=20*2),each=282)
+queryDesign = rep(c("#1","#2"),each=282*2*20)
+
+df =  data.frame(targetGene=target, targetDesign = targetDesign,
+                 queryGene=query, queryDesign=queryDesign,
+                 V)
+
+write.table(df, file=file.path("result","Tables","interactions.txt"),sep="\t",
+            row.names=FALSE,quote=FALSE)
+
+@
+

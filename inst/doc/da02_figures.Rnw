@@ -1,0 +1,103 @@
+
+\section{Figures in paper}\label{Figures}
+In this section all figures from the original publication are shown. In the next sections the R-code for the analysis is documented. A link to the respective section in which the figure is generated is given for each figure.
+\subsection*{Figure 1cd}
+The source code for this figure is in Section \ref{exampleSingleKDPhenotypes}.
+\begin{center}
+  \includegraphics[width=0.3\textwidth]{result/Figures/singleKnockDown-SETD8.pdf}
+  \includegraphics[width=0.3\textwidth]{result/Figures/singleKnockDown-TCF20.pdf}
+\end{center}
+
+\subsection*{Figure 2a}
+The source code for this figure is in Section \ref{QControlFeatures}.
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{result/Figures/QCscatterFeaturesBetweenReplicates.pdf}
+\end{center}
+
+\subsection*{Figure 2bd}
+The source code for this figure is in sections \ref{QControlFeatures} and \ref{QControlGenes}.
+\begin{center}
+  \includegraphics[width=0.45\textwidth]{result/Figures/QCreproducibilityOfFeatures.pdf}
+  \includegraphics[width=0.45\textwidth]{result/Figures/QCreproducibilityOfTargetsiRNA.pdf}
+\end{center}
+
+\subsection*{Figure 2e}
+The source code for this figure is in Section \ref{smallCellNumber}.
+\begin{center}
+  \includegraphics[width=0.45\textwidth]{result/Figures/subsamplingNrInteractions.pdf}
+\end{center}
+
+\subsection*{Figure 3ab}
+The source code for this figure is in Section \ref{exampleDoubleKDPhenotypes}.
+\begin{center}
+  \includegraphics[width=0.37\textwidth]{result/Figures/interaction-PHF16-SETD8.pdf}
+  \includegraphics[width=0.37\textwidth]{result/Figures/interaction-SIN3A-RUVBL1.pdf}
+\end{center}
+
+\subsection*{Figure 3c}
+The source code for this figure is in Section \ref{OverlapOfInteractions}.
+\begin{center}
+<<VennDiagram>>=
+# load("result/Figures/Overlap.rda")
+# print(Overlap)
+@
+\end{center}
+
+\subsection*{Figure 4ac}
+The source code for this figure is in Section \ref{heatmaps}.
+\begin{center}
+  \includegraphics[width=0.3\textwidth]{result/Figures/heatmapAll.pdf}
+  \includegraphics[width=0.45\textwidth]{result/Figures/heatmapSelection.pdf}
+\end{center}
+
+\subsection*{Figure 4b}
+The source code for this figure is in Section \ref{siRNAcorrelation}.
+\begin{center}
+\includegraphics[width=0.7\textwidth]{result/Figures/multidensityWithinDesignCorrelation.pdf}
+\end{center}
+
+% \clearpage
+% 
+% \begin{figure}
+%   \centering
+%   piplot categories
+% %   \includegraphics[width=0.95\textwidth]{Figures/coComplexityHeatmap.pdf}
+%   \mycaption{S1}
+% \end{figure}
+% 
+% \clearpage
+% 
+% \begin{figure}
+%   \centering
+%   PCA on single knock down screen
+% %   \includegraphics[width=0.5\textwidth]{Figures/MediatorOverlapYeastCorrelations.pdf}
+%   \mycaption{S2}
+% \end{figure}
+% 
+
+\subsection*{Figure S3}
+The source code for this figure is in Section \ref{featureSelection}.
+\begin{center}
+  \includegraphics[width=0.45\textwidth]{result/Figures/FeatureSelectionInformationgain.pdf}
+  \includegraphics[width=0.45\textwidth]{result/Figures/FeatureSelectionRatioPositive.pdf}
+\end{center}
+
+\subsection*{Figure S4}
+The source code for this figure is in Section \ref{heatpairsFeatures}.
+\begin{center}
+  \includegraphics[width=0.6\textwidth]{result/Figures/heatpairsFeatures.png}
+\end{center}
+
+\subsection*{Figure S5}
+The source code for this figure is in Section \ref{screenplot}.
+\begin{center}
+  \includegraphics[width=0.6\textwidth]{result/Figures/screenPlot.pdf}
+\end{center}
+
+\subsection*{Figure S6}
+The source code for this figure is in Section \ref{distributionOfInteractions}.
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{result/Figures/distributionOfInteractions.pdf}
+\clearpage
+\end{center}
+
