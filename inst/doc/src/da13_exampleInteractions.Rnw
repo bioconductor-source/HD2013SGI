@@ -17,8 +17,8 @@ dir.create(file.path("result","Figures"),
 Main effects are first summarized over all four siRNA design pairs and divided by the median deviation to compute a z-score. Then, mean and standard deviation of main effects are calculated over the two replicates of the screen.
 <<exampleSingleKnockDownEffects2>>=
 MT1 = apply(mainEffects$target,c(1,4,5),mean,na.rm=TRUE)
-for (i in 1:dim(MT1)[2]) {
-  for (j in 1:dim(MT1)[3]) {
+for (i in seq_len(dim(MT1)[2])) {
+  for (j in seq_len(dim(MT1)[3])) {
     MT1[,i,j] = MT1[,i,j] / mad(MT1[,i,j],center=0.0)
   }
 }
@@ -28,7 +28,7 @@ SD = apply(MT1,c(1,2),sd,na.rm=TRUE)
 
 Main effects for five different phenotypes are plotted for two genes.
 
-<<exampleSingleKnockDownEffects3>>=
+<<exampleSingleKnockDownEffects3,results=hide>>=
 f = c("count", "nuc.0.s.area","nuc.0.m.eccentricity",
       "cell.Bact.m.eccentricity","cell.act.m.majoraxis")
 MT2 = MT[,f]
@@ -44,9 +44,8 @@ pdf(file=file.path("result","Figures","singleKnockDown-SETD8.pdf"),
 par(mar=c(12,4,4,1)+0.1,xpd=NA)
 bp = barplot(MT2[g,],ylab="z-score",ylim=ylim,las=2,main=g)
 abline(h=0.0,xpd=FALSE)
-segments(x0=bp,MT2[g,]-SD2[g,],bp,MT2[g,]+SD2[g,],lwd=1)
-segments(x0=bp-0.2,MT2[g,]-SD2[g,],bp+0.2,MT2[g,]-SD2[g,],lwd=1)
-segments(x0=bp-0.2,MT2[g,]+SD2[g,],bp+0.2,MT2[g,]+SD2[g,],lwd=1)
+points(bp,MT1[g,f,1])
+points(bp,MT1[g,f,2])
 dev.off()
 
 g = "TCF20"
@@ -56,46 +55,40 @@ pdf(file=file.path("result","Figures","singleKnockDown-TCF20.pdf"),
 par(mar=c(12,4,4,1)+0.1,xpd=NA)
 bp = barplot(MT2[g,],ylab="z-score",ylim=ylim,las=2,main=g)
 abline(h=0.0,xpd=FALSE)
-segments(x0=bp,MT2[g,]-SD2[g,],bp,MT2[g,]+SD2[g,],lwd=1)
-segments(x0=bp-0.2,MT2[g,]-SD2[g,],bp+0.2,MT2[g,]-SD2[g,],lwd=1)
-segments(x0=bp-0.2,MT2[g,]+SD2[g,],bp+0.2,MT2[g,]+SD2[g,],lwd=1)
+points(bp,MT1[g,f,1])
+points(bp,MT1[g,f,2])
 dev.off()
 @
 \begin{center}
-\includegraphics[width=0.45\textwidth]{result/Figures/singleKnockDown-SETD8.pdf}
-\includegraphics[width=0.45\textwidth]{result/Figures/singleKnockDown-TCF20.pdf}
+\includegraphics[width=0.3\textwidth]{result/Figures/singleKnockDown-SETD8.pdf}
+\includegraphics[width=0.3\textwidth]{result/Figures/singleKnockDown-TCF20.pdf}
 \end{center}
 
 \subsection{Example of genetic interactions}\label{exampleDoubleKDPhenotypes}
 
 Barplots for example interactions.
-<<exampleInteractions1>>=
+<<exampleInteractions1,results=hide>>=
 plotExampleInteractions <- function(f,target,query,Interactions,mainEffects) {
   MT = mainEffects$target[target,,,f,]
-  dim(MT) = c(4,2)
+  dim(MT) = c(prod(dim(MT)[1:2]),dim(MT)[3])
   MQ = mainEffects$query[,query,,f,]
-  dim(MQ) = c(4,2)
+  dim(MQ) = c(prod(dim(MQ)[1:2]),dim(MQ)[3])
   PI = Interactions$piscore
   PI = PI[target,,query,,f,]
-  dim(PI) = c(4,2)
+  dim(PI) = c(prod(dim(PI)[1:2]),dim(PI)[3])
   EXP = MT+MQ
   DKD = MT+MQ+PI
   X = apply(PI,1,mean)
   names(X) = c("pi11","pi21","pi12","pi22")
   SD = apply(PI,1,sd)
   pv = apply(PI,1,function(x) { t.test(x)$p.value } )
-#   col = gray(rep(c(0.8,0.65,0.5,0.0),4))
-#   col[c(4,8,12,16)] = "#2267AD"
-#   I = c(1,5,9,13,2,6,10,14,3,7,11,15,4,8,12,16)
-  I = 1:4
+#  I = seq_len(dim(PI)[1])
   par(xpd=NA,mar=c(8,5,4,1))
-  bp=barplot(X[I],las=2, #col=col,
-#             space=rep(c(0.7,0.2,0.2,0.2),4),
+  bp=barplot(X,las=2, #col=col,
              main=sprintf("t=%s q=%s ph=%s",target,query,f),
              names.arg = rep("",4))
-  segments(x0=bp,X[I]-SD[I],bp,X[I]+SD[I],lwd=1)
-  segments(x0=bp-0.2,X[I]-SD[I],bp+0.2,X[I]-SD[I],lwd=1)
-  segments(x0=bp-0.2,X[I]+SD[I],bp+0.2,X[I]+SD[I],lwd=1)
+  points(bp,PI[,1])
+  points(bp,PI[,2])
   abline(h=0.0,xpd=FALSE)
   r = range(X)
   if (r[1] > 0) { r[1] = 0.0 }
@@ -127,8 +120,8 @@ dev.off()
 @
 
 \begin{center}
-\includegraphics[width=0.7\textwidth]{result/Figures/interaction-PHF16-SETD8.pdf}\\
-\includegraphics[width=0.7\textwidth]{result/Figures/interaction-SIN3A-RUVBL1.pdf}
+\includegraphics[width=0.3\textwidth]{result/Figures/interaction-PHF16-SETD8.pdf}
+\includegraphics[width=0.3\textwidth]{result/Figures/interaction-SIN3A-RUVBL1.pdf}
 \end{center}
 
 \subsection{Overlap of interactions}\label{OverlapOfInteractions}
@@ -140,7 +133,7 @@ f = c("nuc.0.s.area","nuc.0.m.majoraxis",
 PI = Interactions$padj <= 0.01
 PI[is.na(PI)] = FALSE
 dim(PI) = c(prod(dim(PI)[1:4]),dim(PI)[5])
-row.names(PI) = sprintf("A%d",1:nrow(PI))
+row.names(PI) = sprintf("A%d",seq_len(nrow(PI)))
 colnames(PI) = Interactions$Anno$phenotype
 PI = PI[,f]
 
@@ -151,12 +144,14 @@ save(Overlap, file=file.path("result","Figures","Overlap.rda"))
 @
 
 A mosaic plot of the Venn diagram.
-<<overlapOfInteractions2>>=
+<<overlapOfInteractions2,results=hide>>=
 pdf(file.path("result","Figures","Mosaicplot.pdf"))
 mosaic(Overlap, shade = TRUE)
 dev.off()
 @
-\includegraphics[width=0.8\textwidth]{result/Figures/Mosaicplot.pdf}
+\begin{center}
+\includegraphics[width=0.7\textwidth]{result/Figures/Mosaicplot.pdf}
+\end{center}
 
 Write lists of identifiers for generating a Venn diagram with a webtool (e.g. http://bioinfogp.cnb.csic.es/tools/venny/index.html).
 <<overlapOfInteractions3,eval=FALSE>>=

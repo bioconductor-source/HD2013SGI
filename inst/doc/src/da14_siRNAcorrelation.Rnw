@@ -17,7 +17,7 @@ dir.create(file.path("result","data"), recursive=TRUE)
 $\pi$-scores are summarized over two replicates. Pearson correlation coefficients are computed for interaction profiles for each pair of siRNA and saved in the matric $C$.
 <<siRNAcorrelation2>>=
 PI = Interactions$piscore
-for (k in 1:dim(PI)[5]) {
+for (k in seq_len(dim(PI)[5])) {
   PI[,,,,k,] = PI[,,,,k,] / Interactions$scale[k]
 }
 PI = (PI[,,,,,1]+PI[,,,,,2]) / 2
@@ -30,7 +30,7 @@ C = cor(t(PI2),use="pairwise.complete")
 Correlation coefficients for siRNA pairs, where both siRNA target the same gene are extracted.
 <<siRNAcorrelation3>>=
 IDX = matrix(NA_integer_, nr=dim(Interactions$piscore)[1],nc=2)
-IDX[,1] = 1:dim(Interactions$piscore)[1]
+IDX[,1] = seq_len(dim(Interactions$piscore)[1])
 IDX[,2] = IDX[,1] + dim(Interactions$piscore)[1]
 cc = C[IDX]
 @
@@ -47,7 +47,7 @@ nrOfInteractionsPerTarget = apply(!is.na(S[,1,] == S[,2,]),1,sum,na.rm=TRUE)
 @
 
 We plot the density of correlation coefficients of interaction profiles between siRNAs against different genes and between siRNAs targeting the same gene.
-<<siRNAcorrelation5>>=
+<<siRNAcorrelation5,results=hide>>=
 differentGenes = upper.tri(C)
 differentGenes[IDX] = FALSE
 differentGenes[IDX[,2:1]] = FALSE
@@ -67,7 +67,7 @@ rug(cc[sel])
 dev.off()
 @
 \begin{center}
-\includegraphics[width=0.8\textwidth]{result/Figures/multidensityWithinDesignCorrelation.pdf}
+\includegraphics[width=0.7\textwidth]{result/Figures/multidensityWithinDesignCorrelation.pdf}
 \end{center}
 
 Save the number of interactions per target gene.

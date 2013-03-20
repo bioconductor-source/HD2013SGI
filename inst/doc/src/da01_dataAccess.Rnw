@@ -8,7 +8,7 @@ library(HD2013SGI)
 data(Interactions, package="HD2013SGI")
 @ 
 
-Type
+You can type
 <<dataAccess2,eval=FALSE>>=
 ?Interactions
 @

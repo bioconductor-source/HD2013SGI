@@ -16,16 +16,18 @@ dir.create(file.path("result","Figures"), recursive=TRUE)
 $\pi$-scores for each siRNA-pair are summarized over two replicates. 
 <<heatmap2>>=
 PI = Interactions$piscore
-for (k in 1:dim(PI)[5]) {
+for (k in seq_len(dim(PI)[5])) {
   PI[,,,,k,] = PI[,,,,k,] / Interactions$scale[k]
 }
 PI = (PI[,,,,,1]+PI[,,,,,2]) / 2
 dim(PI) = c(prod(dim(PI)[1:2]),prod(dim(PI)[3:4]),dim(PI)[5])
 dimnames(PI) = list(
   sprintf("%s_%d",rep(Interactions$Anno$target$Symbol,times=2),
-          rep(1:2,each=dim(Interactions$piscore)[1])),
+          rep(seq_len(dim(Interactions$piscore)[2]),
+              each=dim(Interactions$piscore)[1])),
   sprintf("%s_%d",rep(Interactions$Anno$query$Symbol,times=2),
-          rep(1:2,each=dim(Interactions$piscore)[3])),
+          rep(seq_len(dim(Interactions$piscore)[4]),
+              each=dim(Interactions$piscore)[3])),
   rep(dimnames(Interactions$piscore)[[5]]))
 @
 
@@ -39,7 +41,7 @@ cuts = c(-Inf,
 @
 
 A heatmap of $\pi$-scores for all siRNA pairs is plotted.
-<<heatmap4>>=
+<<heatmap4,results=hide>>=
 Y = PI
 hcAll = HD2013SGIorderDim(Y,1)
 I = hcAll$order
@@ -58,7 +60,7 @@ dev.off()
 $\pi$-scores are summarized over all siRNA designs for the same gene and both replicates resulting in a single $\pi$-score per gene pair. 
 <<heatmap5>>=
 PI = Interactions$piscore
-for (k in 1:dim(PI)[5]) {
+for (k in seq_len(dim(PI)[5])) {
   PI[,,,,k,] = PI[,,,,k,] / Interactions$scale[k]
 }
 PI = (PI[,,,,,1]+PI[,,,,,2]) / 2
@@ -82,7 +84,7 @@ C2 = cor(t(Y),use="pairwise.complete")
 @
 
 The heatmap of correlation coefficients is plooted.
-<<heatmap8>>=
+<<heatmap8,results=hide>>=
 dd = as.dendrogram(hcAll)
 pdf(file.path("result","Figures","heatmapSelection.pdf"))
 heatmap.2(C2,col=colorRampPalette(brewer.pal(9,"RdBu"))(255),

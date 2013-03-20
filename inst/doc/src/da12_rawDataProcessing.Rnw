@@ -21,8 +21,6 @@ Create output directories.
 <<RawDataProcessing3>>=
 dir.create(file.path("result","data"),recursive=TRUE,showWarnings=FALSE)
 dir.create(file.path("result","Figures"),recursive=TRUE,showWarnings=FALSE)
-dir.create(file.path("result","Figures","additional"),
-           recursive=TRUE,showWarnings=FALSE)
 dir.create(file.path("result","Tables"),recursive=TRUE,showWarnings=FALSE)
 @
 
@@ -54,7 +52,7 @@ Transform all features with a generalized log transformation. A 3 percent quanti
 
 <<TransformationAndNormalization2>>=
 
-for (i in 1:dim(D)[5]) {
+for (i in seq_len(dim(D)[5])) {
   m = quantile(D[,,,,i,],probs=0.03,na.rm=TRUE)
   D[,,,,i,] = logtrafo(D[,,,,i,],m)
 }
@@ -75,26 +73,36 @@ D = D - M
 
 Subtract median and devide by median deviation per feature.
 <<TransformationAndNormalization4>>=
-for (i in 1:dim(D)[5]) {
+for (i in seq_len(dim(D)[5])) {
   D[,,,,i,] = (D[,,,,i,] - median(D[,,,,i,],na.rm=TRUE)) / 
     mad(D[,,,,i,],na.rm=TRUE)
 }
 @
 
 \subsection{Quality control of features}\label{QControlFeatures}
-The dimension of the data cube before quality control is: \Sexpr{paste(dim(D),collapse=" x ")} (targets x siRNA designs x queries x designs x features x replicates).
+The dimension of the data cube before quality control is\\
+\begin{center}
+\begin{tabular}{lrrl}
+& \Sexpr{dim(datamatrixfull$D)[1]} & target genes \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[2]} & siRNA target designs \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[3]} & query genes \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[4]} & siRNA query designs \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[5]} & phenotypic features\\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[6]} & biological replicates
+\end{tabular}
+\end{center}
 
 Take the mean over all four siRNA design pairs and compute for each feature the Pearson correlation between first and second replicate. 
 <<qualityControlFeatures1>>=
 C = rep(NA_real_,dim(D)[5])
 D2 = (D[,1,,1,,] + D[,2,,1,,] + D[,1,,2,,] + D[,2,,2,,]) / 4
-for (i in 1:dim(D)[5]) {
+for (i in seq_len(dim(D)[5])) {
   C[i] = cor(as.vector(D2[IndexSAMPLE,,i,1]),as.vector(D2[IndexSAMPLE,,i,2]))
 }
 @
 
 Plot the correlation coefficients for all \Sexpr{length(C)} features.
-<<qualityControlFeatures2>>=
+<<qualityControlFeatures2,results=hide>>=
 pdf(file=file.path("result","Figures","QCreproducibilityOfFeatures.pdf"))
 plot(-sort(-C),pch=20,xlab="features",ylab="correlation",ylim=c(0,1))
 abline(h=0.6)
@@ -105,7 +113,7 @@ dev.off()
 \end{center}
 
 As an example the scatter plot of eccentricity measurements is plotted for two replicates.
-<<qualityControlFeatures3>>=
+<<qualityControlFeatures3,results=hide>>=
 pdf(file=file.path("result","Figures","QCscatterFeaturesBetweenReplicates.pdf"))
 i = "cell.Bact.m.eccentricity"
 plot(as.vector(D2[IndexSAMPLE,,i,1]),as.vector(D2[IndexSAMPLE,,i,2]),
@@ -133,7 +141,17 @@ I = which(C >= 0.6)
 D = D[,,,,I,,drop=FALSE]
 @
 
-The dimension of the data cube is now: \Sexpr{paste(dim(D),collapse=" x ")}  (targets x siRNA designs x queries x designs x features x replicates).
+The dimension of the data cube after quality control of the phenotypic features is\\
+\begin{center}
+\begin{tabular}{lrrl}
+& \Sexpr{dim(datamatrixfull$D)[1]} & target genes \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[2]} & siRNA target designs \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[3]} & query genes \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[4]} & siRNA query designs \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[5]} & phenotypic features\\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[6]} & biological replicates
+\end{tabular}
+\end{center}
  
 \subsection{Quality control of siRNA designs}\label{QControlGenes}
 
@@ -145,8 +163,8 @@ D1 = (D[,,,1,,1] + D[,,,1,,2] + D[,,,2,,1] + D[,,,2,,2])/4
 For each target gene the Pearson correlation coefficient is computed for phenotypic profiles between the two siRNA designs separately for each feature. The mean of correlation coefficients over all features is reported for each target gene.
 <<qualityControlsiRNA2>>=
 Cdesign1 = rep(NA_real_,dim(D)[1])
-for (k in 1:dim(D)[5]) {
-  for (i in 1:dim(D)[1]) {
+for (k in seq_len(dim(D)[5])) {
+  for (i in seq_len(dim(D)[1])) {
     Cdesign1[i] = cor(as.vector(D1[i,1,,k]),as.vector(D1[i,2,,k]))
   }
   if ( k == 1) {
@@ -159,7 +177,7 @@ Cdesign1all = Cdesign1all / dim(D)[5]
 @
 
 Plot the correlation coefficients of phenotypic profiles between siRNAs for all target genes.
-<<qualityControlsiRNA3>>=
+<<qualityControlsiRNA3,results=hide>>=
 pdf(file.path("result","Figures","QCreproducibilityOfTargetsiRNA.pdf"))
 plot(-sort(-Cdesign1all[IndexSAMPLE]), pch=20,
      xlab="target genes",ylab="correlation",ylim=c(0,1))
@@ -172,13 +190,39 @@ dev.off()
 
 All gene with a correlation of the phenotypic profiles of at least 0.7 are selected for further analysis. The number of target genes passing quality control is \Sexpr{sum(Cdesign1all[IndexSAMPLE] >= 0.7,na.rm=TRUE)} out of \Sexpr{length(IndexSAMPLE)}. Additionally, \Sexpr{length(IndexNEG)} negative control target siRNAs selected.
 
+<<qualityControlsiRNA4,results=hide>>=
+f = "cell.Bact.m.eccentricity"
+D1 = D[ TargetAnnotation$Symbol == "CHAF1A",,QueryAnnotation$Symbol == "DPF2",1,f,]
+pdf(file.path("result","Figures","QCreproducibilityOfTargetsiRNAexample.pdf"),width=2,height=4)
+par(xpd=NA)
+bp = barplot(apply(D1,1,mean),ylab="Cell eccentricity",
+        names.arg=c("CHAF1A #1\nDPF2 #1","CHAF1A #2\nDPF2 #1"),las=2)
+points(bp,D1[,1])
+points(bp,D1[,2])
+dev.off()
+@
+\begin{center}
+\includegraphics[width=0.25\textwidth]{result/Figures/QCreproducibilityOfTargetsiRNAexample.pdf}
+\end{center}
+
+
 <<qualityControlsiRNA4>>=
 I = IndexSAMPLE[Cdesign1all[IndexSAMPLE] >= 0.7]
 I = c(I, IndexNEG)
 D = D[I,,,,,,drop=FALSE]
 TargetAnnotation = TargetAnnotation[I,]
 @
-The dimension of the data cube is now: \Sexpr{paste(dim(D),collapse=" x ")}  (targets x siRNA designs x queries x designs x features x replicates).
+The dimension of the data cube quality control of the siRNA designs is\\
+\begin{center}
+\begin{tabular}{lrrl}
+& \Sexpr{dim(datamatrixfull$D)[1]} & target genes \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[2]} & siRNA target designs \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[3]} & query genes \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[4]} & siRNA query designs \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[5]} & phenotypic features\\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[6]} & biological replicates
+\end{tabular}
+\end{center}
 
 \subsection{Selection of non-redundant features}\label{featureSelection}
 The \Sexpr{dim(D)[5]} features are highly redundant. We select a set of non-redundant features. The phenotypic profiles are summarized over all siRNA designs and control measurements are excluded for feature selection.
@@ -192,7 +236,7 @@ D1 = D1[TargetAnnotation$group == "sample",,,]
 dim(D1) = c(prod(dim(D1)[1:2]),dim(D1)[3:4])
 D1 = aperm(D1,c(1,3,2))
 set.seed(5830458)
-Sample = sample(1:dim(D1)[1], 3000)
+Sample = sample(seq_len(dim(D1)[1]), 3000)
 subSampleForStabilitySelection = list(D = D1[Sample,,],
                                       Sample = Sample,
                                       phenotype = dimnames(D)[[5]])
@@ -211,7 +255,7 @@ Sel = stabilitySelection$ratioPositive >= 0.5
 @
 
 A set of \Sexpr{sum(Sel)} features is shown to contain non-redundant information. At first we plot the correlation coefficients of the residual features which is considered to be the information content.
-<<featureSelection5>>=
+<<featureSelection5,results=hide>>=
 col = brewer.pal(3,"Pastel1")[1:2]
 pdf(file.path("result","Figures","FeatureSelectionInformationgain.pdf"))
 par(mar=c(13,4,1,1))
@@ -226,7 +270,7 @@ dev.off()
 \end{center}
 
 Now we plot the fraction of positive correlation coefficients that serves as a stop criterion.
-<<featureSelection6>>=
+<<featureSelection6,results=hide>>=
 pdf(file.path("result","Figures","FeatureSelectionRatioPositive.pdf"))
 par(mar=c(13,4,1,1))
 barplot(stabilitySelection$ratioPositive-0.5, 
@@ -248,7 +292,17 @@ dimnames(D)[[1]] = TargetAnnotation$Symbol
 dimnames(D)[[3]] = QueryAnnotation$Symbol
 @
 
-After selecting \Sexpr{sum(Sel)} features, the dimension of the data cube is now: \Sexpr{paste(dim(D),collapse=" x ")}  (targets x siRNA designs x queries x designs x features x replicates).
+After selecting \Sexpr{sum(Sel)} non-redundant features, the dimension of the data cube is\\
+\begin{center}
+\begin{tabular}{lrrl}
+& \Sexpr{dim(datamatrixfull$D)[1]} & target genes \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[2]} & siRNA target designs \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[3]} & query genes \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[4]} & siRNA query designs \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[5]} & phenotypic features\\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[6]} & biological replicates
+\end{tabular}
+\end{center}
 
 The datamatrix is now completely pre-processed and can be saved.
 <<featureSelection8>>=
@@ -262,7 +316,6 @@ save(datamatrix, file=file.path("result","data","datamatrix.rda"))
 Pairwise interaction scores ($\pi$=scores) are estimated using a robust linear fit. The query main effects are lifted such that they equal to the mean of the single knock down measurements of the query genes (target siRNA is a scrambled sequence serving as negative control). 
 <<pairwiseInteractionScores1>>=
 D = datamatrix$D
-dim(D)
 pimatrix = datamatrix
 pimatrix$D[] = NA_real_
 mainEffects = list(target = D[,,1,,,],
@@ -270,10 +323,10 @@ mainEffects = list(target = D[,,1,,,],
                    overall = D[1,,1,,,],
                    Anno = datamatrix$Anno)
 
-for (i in 1:2) {
-  for (j in 1:2) {
-    for (k in 1:dim(D)[5]) {
-      for (l in 1:2) {
+for (i in seq_len(dim(D)[2])) {
+  for (j in seq_len(dim(D)[4])) {
+    for (k in seq_len(dim(D)[5])) {
+      for (l in seq_len(dim(D)[6])) {
         MP = HD2013SGImaineffects(D[,i,,j,k,l],
             TargetNeg=which(TargetAnnotation$group == "negctrl"))
         pimatrix$D[,i,,j,k,l] = MP$pi
@@ -290,18 +343,14 @@ save(mainEffects, file=file.path("result","data","mainEffects.rda"))
 \subsection{Statistical testing of interaction terms}
 For statistical testing the interaction terms that differ by 4 times the median deviation of the interaction scores are flagged as outliers. Afterwards the interaction terms are tested for significance by a moderated t-test implemented in the R-package limma.
 <<callingInteractions1>>=
-pdf(file.path("result","Figures","additional",
-              "callingInteractions.pdf"),height=10)
 D = pimatrix$D
 PADJ = D[pimatrix$Anno$target$group == "sample",,,,,1]
 s = rep(NA_real_, dim(D)[5])
-for (i in 1:dim(D)[5]) {
+for (i in seq_len(dim(D)[5])) {
   Data = D[,,,,i,]
   Data = Data[pimatrix$Anno$target$group == "sample",,,,]
   d = dim(Data)
   dim(Data) = c(prod(d[1:4]),prod(d[5]))
-  par(mfrow=c(2,1))
-  plot(Data,pch=20,cex=0.4,main=dimnames(D)[[5]][i])
   Data[abs(Data[,1]-Data[,2]) > 4*mad(Data[,1]-Data[,2],center=0.0),]=NA_real_
 
   s[i] = median(apply(Data,1,sd), na.rm=TRUE)
@@ -310,12 +359,9 @@ for (i in 1:dim(D)[5]) {
   fit = eBayes(lmFit(Data[K,]))
   padj[K] = p.adjust(fit$p.value, method="BH")
   PADJ[,,,,i] = padj
-  plot(Data,pch=20,col=ifelse(padj < 0.03,"red","black"),
-       cex=0.4,main="with filtering")
   cat("i=",i," nr int (1%) = ",sum(padj <= 0.01,na.rm=TRUE)/nrow(Data),
       " nr int (3%) = ",sum(padj <= 0.03,na.rm=TRUE)/nrow(Data),"\n")
 }
-dev.off()
 @
 
 $\pi$-scores for each siRNA pair are summarized over both replicates. Furthermore interaction scores are divided by their median deviation over all siRNA pairs, to provide comparable measurements.

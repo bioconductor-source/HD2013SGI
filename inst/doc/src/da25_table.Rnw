@@ -23,15 +23,21 @@ dim(PI) = c(prod(dim(PI)[1:4]),dim(PI)[5])
 dim(PADJ) = c(prod(dim(PADJ)[1:4]),dim(PADJ)[5])
 
 V = cbind(PI, PADJ)
-V = V[,rep(1:11,each=2)+rep(c(0,11),times=11)]
-colnames(V) = sprintf("%s.%s",rep(c("pi-score","padj"),times=11),
+V = V[,rep(seq_len(dim(PI)[2]),each=2)+rep(c(0,dim(PI)[2]),times=dim(PI)[2])]
+colnames(V) = sprintf("%s.%s",rep(c("pi-score","padj"),times=dim(PI)[2]),
         rep(HD2013SGI:::humanReadableNames[ Interactions$Anno$phenotype ],
                           each=2))
 
-target = rep(Interactions$Anno$target$Symbol,2*20*2)
-query = rep(rep(Interactions$Anno$query$Symbol,times=2),each=282*2)
-targetDesign = rep(rep(c("#1","#2"),times=20*2),each=282)
-queryDesign = rep(c("#1","#2"),each=282*2*20)
+target =       rep(Interactions$Anno$target$Symbol,
+                   times=prod(dim(Interactions$piscore)[c(2,3,4)]))
+targetDesign = rep(rep(c("#1","#2"),
+                   times=prod(dim(Interactions$piscore)[c(3,4)])),
+                   each=dim(Interactions$piscore)[1])
+query =        rep(rep(Interactions$Anno$query$Symbol,
+                   times=dim(Interactions$piscore)[4]),
+                   each=prod(dim(Interactions$piscore)[c(1,2)]))
+queryDesign =  rep(c("#1","#2"),
+                   each=prod(dim(Interactions$piscore)[c(1,2,3)]))
 
 df =  data.frame(targetGene=target, targetDesign = targetDesign,
                  queryGene=query, queryDesign=queryDesign,
@@ -39,6 +45,5 @@ df =  data.frame(targetGene=target, targetDesign = targetDesign,
 
 write.table(df, file=file.path("result","Tables","interactions.txt"),sep="\t",
             row.names=FALSE,quote=FALSE)
-
 @
 

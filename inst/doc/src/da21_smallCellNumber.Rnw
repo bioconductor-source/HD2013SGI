@@ -14,71 +14,51 @@ data("datamatrix", package="HD2013SGI")
 @
 
 \subsection{Convert data from plate order to SGI-array}
+<<smallCellNumber2,echo=FALSE,results=hide>>=
+NROW = 15
+NCOL = 23
+NFIELD = 4
+@
+
 The simulation of an genetic interaction experiment with smaller cell numbers follows the scripts in 'data conversion' and 'data processing of main data'.
 
 At first the plate barcodes are parsed.
 <<smallCellNumber2>>=
-plates = featuresPerWell$Anno[seq(1,231840,by=4*23*15),"plate"]
-platenr = substr(plates,1,3)
-queryGroup = rep("sample",168)
-queryGroup[161:168] = "negControl"
+plates = featuresPerWell$Anno[seq(1,nrow(featuresPerWell$Anno),
+                                  by=NFIELD*NCOL*NROW),"plate"]
+PlateAnnotation = HD2013SGI:::parsePlateBarcodes(plates)
+@
 
-r = substr(plates,4,10000)
+The names of all query genes are extracted.
 
-S = 1:160
-N = 161:168
-targetDesign = sapply(strsplit(r,split="[QN]"),function(x) { x[1] } )
-targetDesign[targetDesign == "CI"] = 1
-targetDesign[targetDesign == "CII"] = 2
-targetDesign = as.integer(targetDesign)
-
-r = sapply(strsplit(r,split="[QN]"),function(x) { x[2] } )
-queryGene = rep("NegControl",168)
-queryGene[S] = substr(r[S],1,2)
-
-r[S] = substr(r[S],3,100)
-
-queryDesign = sapply(strsplit(r,split="[R]"),function(x) { x[1] } )
-queryDesign[queryDesign == "I"] = 1
-queryDesign[queryDesign == "II"] = 2
-queryDesign = as.integer(queryDesign)
-
-replicate = sapply(strsplit(r,split="[R]"),function(x) { x[2] } )
-replicate[replicate == "I"] = 1
-replicate[replicate == "II"] = 2
-replicate = as.integer(replicate)
-
-PlateAnnotation = data.frame(plate = plates,
-                             targetDesign = targetDesign,
-                             queryGroup = queryGroup,
-                             queryGene = queryGene,
-                             queryDesign = queryDesign, 
-                             replicate = replicate,
-                             stringsAsFactors=FALSE)
-
-qnames = unique(PlateAnnotation$queryGene[ 
-                  PlateAnnotation$queryGroup=="sample" ])
-nq = length(qnames)
+<<smallCellNumber2>>=
+S = which(PlateAnnotation$queryGroup=="sample")
+tdnames = unique(PlateAnnotation$targetDesign[S])
+qnames = unique(PlateAnnotation$queryGene[S])
+qdnames = unique(PlateAnnotation$queryDesign[S])
+repnames = unique(PlateAnnotation$replicate[S])
 @
 
 The data is converted from the screen plate layout to a multi-dimensional array.
 <<smallCellNumber2>>=
-D = array(0.0, dim=c(field=4,col=23,row=15,
+D = array(0.0, dim=c(field=NFIELD,col=NCOL,row=NROW,
                      features=dim(featuresPerWell$data)[2],
-                     targetDesign=2,
-                     query=nq,queryDesign=2,replicate=2))
-dimnames(D) = list(field=1:4,col=1:23,row=LETTERS[2:16],
+                     targetDesign=length(tdnames),
+                     query=length(qnames),queryDesign=length(qdnames),
+                     replicate=length(repnames)))
+dimnames(D) = list(field=seq_len(NFIELD),
+                   col=seq_len(NCOL),row=LETTERS[seq_len(NROW)+1],
                    features=dimnames(featuresPerWell$data)[[2]],
-                   targetDesign=1:2,
-                   queryGene=qnames,queryDesign=1:2,replicate=1:2)
+                   targetDesign=tdnames,
+                   queryGene=qnames,queryDesign=qdnames,replicate=repnames)
 z=0
-for (td in 1:2) {
-  for (q in 1:nq) {
-    for (qd in 1:2) {
-      for (r in 1:2) {
-        plate = PlateAnnotation$plate[ 
-          which((PlateAnnotation$targetDesign == td) &
-          (PlateAnnotation$queryGene == qnames[q]) &
+for (td in tdnames) {
+  for (q in qnames) {
+    for (qd in qdnames) {
+      for (r in repnames) {
+        plate = PlateAnnotation$plate[
+                      which((PlateAnnotation$targetDesign == td) &
+          (PlateAnnotation$queryGene == q) &
           (PlateAnnotation$queryDesign == qd) &
           (PlateAnnotation$replicate == r) ) ]
         z=z+1
@@ -105,8 +85,9 @@ D = (D[1,,,,,,,] + D[2,,,,,,,] + D[3,,,,,,,] + D[4,,,,,,,])/4
 D = aperm(D,c(1,2,4,5,6,3,7))
 dn = dimnames(D)
 dim(D) = c(prod(dim(D)[1:2]),dim(D)[3:7])
-dimnames(D) = c(list(targetGene = sprintf("%s%d",rep(LETTERS[2:16],each=23),
-                                            rep(1:23,times=15))),
+dimnames(D) = c(list(targetGene = 
+                       sprintf("%s%d",rep(LETTERS[seq_len(NROW)+1],each=NCOL),
+                                      rep(seq_len(NCOL),times=NROW))),
                    dn[3:7])
 
 Dsub1 = aperm(Dsub1,c(1,2,4,5,6,3,7))
@@ -338,7 +319,7 @@ InteractionsSub2 = getInteractions(Dsub2)
 
 The number of significantly interacting siRNA pairs is plotted.
 
-<<SCNnumbers>>=
+<<SCNnumbers,results=hide>>=
 field1 = sum(InteractionsSub1$padj <= 0.01,na.rm=TRUE)
 field2 = sum(InteractionsSub2$padj <= 0.01,na.rm=TRUE)
 field4 = sum(InteractionsSub4$padj <= 0.01,na.rm=TRUE)

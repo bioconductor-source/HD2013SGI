@@ -24,95 +24,55 @@ dir.create(file.path("result","data"),recursive=TRUE,showWarnings=FALSE)
 @
 
 \subsection{Parse plate barcodes to annotate the plates}
-Plate barcodes and plate numbers are extracted from the annotation. The plates have 15 rows and 23 columns. The first column (A) and last column (24) are not imaged.
-<<convertData2>>=
-plates = featuresPerWell$Anno[seq(1,231840,by=4*23*15),"plate"]
-head(plates)
-platenr = substr(plates,1,3)
+<<convertData2,echo=FALSE,results=hide>>=
+NROW = 15
+NCOL = 23
+NFIELD = 4
 @
 
-Each plate contains the same set of taerget siRNAs. In all wells of one plate the same query siRNA is pipetted. The query siRNA on the \Sexpr{length(platenr)} plates are grouped in sample (double gene knock down) and negative control to measure the main effects (single knock down effects) of the target genes.
+Plate barcodes and plate numbers are extracted from the annotation. 
+
+The plates have \Sexpr{NROW} rows and \Sexpr{NCOL} columns. \Sexpr{NFIELD} fields are imaged per well. 
+
+The plate annotation is summarized in a data frame.
 <<convertData3>>=
-queryGroup = rep("sample",168)
-queryGroup[161:168] = "negControl"
+plates = featuresPerWell$Anno[seq(1,nrow(featuresPerWell$Anno),
+                                  by=NFIELD*NCOL*NROW),"plate"]
+PlateAnnotation = HD2013SGI:::parsePlateBarcodes(plates)
+head(PlateAnnotation)
 @
 
-The remainder of the plate barcodes contain the targetDesign (CI or CII).
+The names of all query genes are extracted.
 
 <<convertData4>>=
-r = substr(plates,4,10000)
-head(r)
-
-S = 1:160
-N = 161:168
-targetDesign = sapply(strsplit(r,split="[QN]"),function(x) { x[1] } )
-targetDesign[targetDesign == "CI"] = 1
-targetDesign[targetDesign == "CII"] = 2
-targetDesign = as.integer(targetDesign)
-@
-
-The remainder of the plate barcodes contain the query gene.
-
-<<convertData5>>=
-r = sapply(strsplit(r,split="[QN]"),function(x) { x[2] } )
-head(r)
-
-queryGene = rep("NegControl",168)
-queryGene[S] = substr(r[S],1,2)
-@
-
-The remainder of the plate barcodes contain the query design.
-<<convertData6>>=
-r[S] = substr(r[S],3,100)
-head(r)
-
-queryDesign = sapply(strsplit(r,split="[R]"),function(x) { x[1] } )
-queryDesign[queryDesign == "I"] = 1
-queryDesign[queryDesign == "II"] = 2
-queryDesign = as.integer(queryDesign)
-@
-
-The remainder of the plate barcodes contain the biological replicate.
-<<convertData7>>=
-replicate = sapply(strsplit(r,split="[R]"),function(x) { x[2] } )
-replicate[replicate == "I"] = 1
-replicate[replicate == "II"] = 2
-replicate = as.integer(replicate)
-@
-
-The plate annotation is summarized in a table.
-<<convertData8>>=
-PlateAnnotation = data.frame(plate = plates,
-                             targetDesign = targetDesign,
-                             queryGroup = queryGroup,
-                             queryGene = queryGene,
-                             queryDesign = queryDesign, 
-                             replicate = replicate,
-                             stringsAsFactors=FALSE)
-qnames = unique(PlateAnnotation$queryGene[
-                  PlateAnnotation$queryGroup=="sample" ])
-nq = length(qnames)
+S = which(PlateAnnotation$queryGroup=="sample")
+tdnames = unique(PlateAnnotation$targetDesign[S])
+qnames = unique(PlateAnnotation$queryGene[S])
+qdnames = unique(PlateAnnotation$queryDesign[S])
+repnames = unique(PlateAnnotation$replicate[S])
 @
 
 \subsection{Reorder data}
 The data is reordered and saved as an array. The mean of the measurements in the four fields per well is taken.
 <<convertData9>>=
-D = array(0.0, dim=c(field=4,col=23,row=15,
+D = array(0.0, dim=c(field=NFIELD,col=NCOL,row=NROW,
                      features=dim(featuresPerWell$data)[2],
-                     targetDesign=2,
-                     query=nq,queryDesign=2,replicate=2))
-dimnames(D) = list(field=1:4,col=1:23,row=LETTERS[2:16],
+                     targetDesign=length(tdnames),
+                     query=length(qnames),queryDesign=length(qdnames),
+                     replicate=length(repnames)))
+dimnames(D) = list(field=seq_len(NFIELD),
+                   col=seq_len(NCOL),row=LETTERS[seq_len(NROW)+1],
                    features=dimnames(featuresPerWell$data)[[2]],
-                   targetDesign=1:2,
-                   queryGene=qnames,queryDesign=1:2,replicate=1:2)
+                   targetDesign=tdnames,
+                   queryGene=qnames,queryDesign=qdnames,replicate=repnames)
 z=0
-for (td in 1:2) {
-  for (q in 1:nq) {
-    for (qd in 1:2) {
-      for (r in 1:2) {
-        plate = PlateAnnotation$plate[ 
+for (td in tdnames) {
+  for (q in qnames) {
+    for (qd in qdnames) {
+      for (r in repnames) {
+        plate = PlateAnnotation$plate[
                       which((PlateAnnotation$targetDesign == td) &
-          (PlateAnnotation$queryGene == qnames[q]) &
+          (PlateAnnotation$queryGene == q) &
           (PlateAnnotation$queryDesign == qd) &
           (PlateAnnotation$replicate == r) ) ]
         z=z+1
@@ -129,8 +89,9 @@ D = (D[1,,,,,,,] + D[2,,,,,,,] + D[3,,,,,,,] + D[4,,,,,,,])/4
 D = aperm(D,c(1,2,4,5,6,3,7))
 dn = dimnames(D)
 dim(D) = c(prod(dim(D)[1:2]),dim(D)[3:7])
-dimnames(D) = c(list(targetGene = sprintf("%s%d",rep(LETTERS[2:16],each=23),
-                                          rep(1:23,times=15))),
+dimnames(D) = c(list(targetGene = 
+                       sprintf("%s%d",rep(LETTERS[seq_len(NROW)+1],each=NCOL),
+                                      rep(seq_len(NCOL),times=NROW))),
                    dn[3:7])
 
 datamatrixfull = list(D = D)
@@ -138,5 +99,14 @@ datamatrixfull = list(D = D)
 save(datamatrixfull, file=file.path("result","data","datamatrixfull.rda"))
 @
 
-The dimension of the raw data cube is: \Sexpr{paste(dim(datamatrixfull$D),collapse=" x ")} (targets x siRNA designs x queries x designs x features x replicates).
-
+The raw data is represented as a 6-dimensional array with dimensions\\
+\begin{center}
+\begin{tabular}{lrrl}
+& \Sexpr{dim(datamatrixfull$D)[1]} & target genes \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[2]} & siRNA target designs \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[3]} & query genes \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[4]} & siRNA query designs \\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[5]} & phenotypic features\\
+$\times$ & \Sexpr{dim(datamatrixfull$D)[6]} & biological replicates
+\end{tabular}
+\end{center}

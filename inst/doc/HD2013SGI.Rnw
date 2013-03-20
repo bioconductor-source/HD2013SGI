@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{Figures}
+%\VignetteIndexEntry{HD2013SGI}
 %\VignettePackage{HD2013SGI}
 \documentclass[10pt,a4paper,oneside]{article}
 

@@ -21,6 +21,12 @@ The source code for this figure is in sections \ref{QControlFeatures} and \ref{Q
   \includegraphics[width=0.45\textwidth]{result/Figures/QCreproducibilityOfTargetsiRNA.pdf}
 \end{center}
 
+\subsection*{Figure 2c}
+The source code for this figure is in Section \ref{QControlGenes}.
+\begin{center}
+  \includegraphics[width=0.25\textwidth]{result/Figures/QCreproducibilityOfTargetsiRNAexample.pdf}
+\end{center}
+
 \subsection*{Figure 2e}
 The source code for this figure is in Section \ref{smallCellNumber}.
 \begin{center}
@@ -98,6 +104,5 @@ The source code for this figure is in Section \ref{screenplot}.
 The source code for this figure is in Section \ref{distributionOfInteractions}.
 \begin{center}
   \includegraphics[width=0.5\textwidth]{result/Figures/distributionOfInteractions.pdf}
-\clearpage
 \end{center}
 

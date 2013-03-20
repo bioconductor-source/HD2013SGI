@@ -14,16 +14,16 @@ dir.create(file.path("result","Figures"),
 \subsection{Screen plots}
 
 The $\pi$-scores are mapped back to the screen plate layout. Screen plots of two plates are plotted.
-<<screenplots2>>=
+<<screenplots2,results=hide>>=
 F = "cell.act.m.majoraxis"
 EmptyPlate = rep(NA_real_, 24*16)
 names(EmptyPlate) = sprintf("%s%d",rep(LETTERS[1:16],each=24),
                             rep(1:24,times=16))
 z = list()
-for (Rep in 1:2) {
-  for (Q in 1:dim(Interactions$piscore)[3]) {
-    for (QD in 1:2) {
-      for (TD in 1:2) {
+for (Rep in seq_len(dim(Interactions$piscore)[6])) {
+  for (Q in seq_len(dim(Interactions$piscore)[3])) {
+    for (QD in seq_len(dim(Interactions$piscore)[4])) {
+      for (TD in seq_len(dim(Interactions$piscore)[2])) {
         Plate = EmptyPlate
         Plate[Interactions$Anno$target$Well] = 
                 Interactions$piscore[,TD,Q,QD,F,Rep]
