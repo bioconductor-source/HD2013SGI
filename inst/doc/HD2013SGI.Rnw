@@ -2,7 +2,7 @@
 %\VignettePackage{HD2013SGI}
 \documentclass[10pt,a4paper,oneside]{article}
 
-\newcommand{\thetitle}{Mapping genetic interactions in human cancer cells by RNAi -- Laufer, Fischer et al., 2013}
+\newcommand{\thetitle}{Mapping genetic interactions in human cancer cells with RNAi -- Laufer, Fischer et al., 2013}
 %\usepackage[pdftitle={\thetitle},pdfauthor={Bernd Fischer}]{whbiocvignette}
 \usepackage{whbiocvignette}
 
@@ -26,7 +26,14 @@
 
 \section{Introduction}
 This package contains the data and R-code for statistical analysis for
-the paper HD2013SGI by  Laufer, Fischer, et al.. In Section \ref{dataAccess} the
+the paper \\\\
+\begin{center}
+\begin{minipage}[t]{0.8\textwidth}
+  Christina Laufer, Bernd Fischer, Maximilian Billman, Wolfgang
+Huber, and Michael Boutros (2013):{\it Mapping genetic interactions in human cancer cells with RNAi}. \\\\
+\end{minipage}
+\end{center}
+In Section \ref{dataAccess} the
 access to the data is described. Section \ref{Figures} shows the
 figures from the original publication and gives the link to the
 section describing the analysis and showing the R-code for analysis

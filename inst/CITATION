@@ -1,0 +1,13 @@
+
+citEntry(entry="article",
+  title = "Mapping genetic interactions in human cancer cells with RNAi",
+  author = personList( as.person("Christina Laufer"), 
+		       as.person("Bernd Fischer"),
+		       as.person("Maximilian Billmann"),
+		       as.person("Wolfgang Huber"),
+		       as.person("Michael Boutros")),
+  year = "2013",
+  textVersion = 
+         paste("Christina Laufer, Bernd Fischer, Maximilian Billmann, Wolfgang Huber, and Michael Boutros (2013):", 
+               "Mapping genetic interactions in human cancer cells with RNAi.")
+)
