@@ -2,7 +2,7 @@ Package: HD2013SGI
 Type: Package
 Title: Experimental Data and Analysis of the HCT116 Genetic Interaction
         Matrix
-Version: 0.99.8
+Version: 0.99.9
 Author: Bernd Fischer
 Maintainer: Bernd Fischer <bernd.fischer@embl.de>
 Description: Experimental Data and Analysis of the HCT116 Genetic Interaction Matrix.
@@ -11,4 +11,4 @@ LazyLoad: true
 Depends: R (>= 2.10), RColorBrewer, gplots, geneplotter, 
         splots, limma, vcd, LSD
 SystemRequirements: GNU make
-biocViews: ExperimentData
+biocViews: ExperimentData,CellBasedAssays,NetworkAnalysis,QualityControl,CellBiology,Cancer,Colon
