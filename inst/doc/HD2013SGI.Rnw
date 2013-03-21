@@ -50,18 +50,18 @@ source("http://bioconductor.org/biocLite.R")
 biocLite("HD2013SGI")
 @
 
-\input{da01_dataAccess.tex}
-\input{da02_figures.tex}
-\input{da11_convertData.tex}
-\input{da12_rawDataProcessing.tex}
-\input{da13_exampleInteractions.tex}
-\input{da14_siRNAcorrelation.tex}
-\input{da15_heatmaps.tex}
-\input{da21_smallCellNumber.tex}
-\input{da22_distributionOfInteractions.tex}
-\input{da23_scatterplots.tex}
-\input{da24_screenplots.tex}
-\input{da25_table.tex}
+\input{sec02_dataAccess.tex}
+\input{sec03_figures.tex}
+\input{sec04_convertData.tex}
+\input{sec05_rawDataProcessing.tex}
+\input{sec06_exampleInteractions.tex}
+\input{sec07_siRNAcorrelation.tex}
+\input{sec08_heatmaps.tex}
+\input{sec09_smallCellNumber.tex}
+\input{sec10_distributionOfInteractions.tex}
+\input{sec11_scatterplots.tex}
+\input{sec12_screenplots.tex}
+\input{sec13_table.tex}
 
 <<moreSourceFiles, echo=FALSE,eval=FALSE>>=
 # See the following folder for the source files and R scriptsd of the single sections:
