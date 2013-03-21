@@ -83,12 +83,12 @@ for (i in seq_len(dim(D)[5])) {
 The dimension of the data cube before quality control is\\
 \begin{center}
 \begin{tabular}{lrrl}
-& \Sexpr{dim(datamatrixfull$D)[1]} & target genes \\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[2]} & siRNA target designs \\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[3]} & query genes \\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[4]} & siRNA query designs \\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[5]} & phenotypic features\\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[6]} & biological replicates
+& \Sexpr{dim(D)[1]} & target genes \\
+$\times$ & \Sexpr{dim(D)[2]} & siRNA target designs \\
+$\times$ & \Sexpr{dim(D)[3]} & query genes \\
+$\times$ & \Sexpr{dim(D)[4]} & siRNA query designs \\
+$\times$ & \Sexpr{dim(D)[5]} & phenotypic features\\
+$\times$ & \Sexpr{dim(D)[6]} & biological replicates
 \end{tabular}
 \end{center}
 
@@ -144,12 +144,12 @@ D = D[,,,,I,,drop=FALSE]
 The dimension of the data cube after quality control of the phenotypic features is\\
 \begin{center}
 \begin{tabular}{lrrl}
-& \Sexpr{dim(datamatrixfull$D)[1]} & target genes \\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[2]} & siRNA target designs \\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[3]} & query genes \\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[4]} & siRNA query designs \\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[5]} & phenotypic features\\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[6]} & biological replicates
+& \Sexpr{dim(D)[1]} & target genes \\
+$\times$ & \Sexpr{dim(D)[2]} & siRNA target designs \\
+$\times$ & \Sexpr{dim(D)[3]} & query genes \\
+$\times$ & \Sexpr{dim(D)[4]} & siRNA query designs \\
+$\times$ & \Sexpr{dim(D)[5]} & phenotypic features\\
+$\times$ & \Sexpr{dim(D)[6]} & biological replicates
 \end{tabular}
 \end{center}
  
@@ -215,12 +215,12 @@ TargetAnnotation = TargetAnnotation[I,]
 The dimension of the data cube quality control of the siRNA designs is\\
 \begin{center}
 \begin{tabular}{lrrl}
-& \Sexpr{dim(datamatrixfull$D)[1]} & target genes \\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[2]} & siRNA target designs \\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[3]} & query genes \\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[4]} & siRNA query designs \\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[5]} & phenotypic features\\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[6]} & biological replicates
+& \Sexpr{dim(D)[1]} & target genes \\
+$\times$ & \Sexpr{dim(D)[2]} & siRNA target designs \\
+$\times$ & \Sexpr{dim(D)[3]} & query genes \\
+$\times$ & \Sexpr{dim(D)[4]} & siRNA query designs \\
+$\times$ & \Sexpr{dim(D)[5]} & phenotypic features\\
+$\times$ & \Sexpr{dim(D)[6]} & biological replicates
 \end{tabular}
 \end{center}
 
@@ -295,12 +295,12 @@ dimnames(D)[[3]] = QueryAnnotation$Symbol
 After selecting \Sexpr{sum(Sel)} non-redundant features, the dimension of the data cube is\\
 \begin{center}
 \begin{tabular}{lrrl}
-& \Sexpr{dim(datamatrixfull$D)[1]} & target genes \\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[2]} & siRNA target designs \\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[3]} & query genes \\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[4]} & siRNA query designs \\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[5]} & phenotypic features\\
-$\times$ & \Sexpr{dim(datamatrixfull$D)[6]} & biological replicates
+& \Sexpr{dim(D)[1]} & target genes \\
+$\times$ & \Sexpr{dim(D)[2]} & siRNA target designs \\
+$\times$ & \Sexpr{dim(D)[3]} & query genes \\
+$\times$ & \Sexpr{dim(D)[4]} & siRNA query designs \\
+$\times$ & \Sexpr{dim(D)[5]} & phenotypic features\\
+$\times$ & \Sexpr{dim(D)[6]} & biological replicates
 \end{tabular}
 \end{center}
 

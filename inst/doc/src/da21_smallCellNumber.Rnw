@@ -23,7 +23,7 @@ NFIELD = 4
 The simulation of an genetic interaction experiment with smaller cell numbers follows the scripts in 'data conversion' and 'data processing of main data'.
 
 At first the plate barcodes are parsed.
-<<smallCellNumber2>>=
+<<smallCellNumber3>>=
 plates = featuresPerWell$Anno[seq(1,nrow(featuresPerWell$Anno),
                                   by=NFIELD*NCOL*NROW),"plate"]
 PlateAnnotation = HD2013SGI:::parsePlateBarcodes(plates)
@@ -31,7 +31,7 @@ PlateAnnotation = HD2013SGI:::parsePlateBarcodes(plates)
 
 The names of all query genes are extracted.
 
-<<smallCellNumber2>>=
+<<smallCellNumber4>>=
 S = which(PlateAnnotation$queryGroup=="sample")
 tdnames = unique(PlateAnnotation$targetDesign[S])
 qnames = unique(PlateAnnotation$queryGene[S])
@@ -40,7 +40,7 @@ repnames = unique(PlateAnnotation$replicate[S])
 @
 
 The data is converted from the screen plate layout to a multi-dimensional array.
-<<smallCellNumber2>>=
+<<smallCellNumber5>>=
 D = array(0.0, dim=c(field=NFIELD,col=NCOL,row=NROW,
                      features=dim(featuresPerWell$data)[2],
                      targetDesign=length(tdnames),
@@ -77,7 +77,7 @@ The data is summarized by the mean value
 \item considering two imaging fields per well,
 \item considering all four imaging fields per well.
 \end{enumerate}
-<<smallCellNumber2>>=
+<<smallCellNumber6>>=
 Dsub1 = D[1,,,,,,,]
 Dsub2 = (D[1,,,,,,,] + D[2,,,,,,,])/2
 D = (D[1,,,,,,,] + D[2,,,,,,,] + D[3,,,,,,,] + D[4,,,,,,,])/4
@@ -103,7 +103,7 @@ datamatrixfullsub = list(Dsub1 = Dsub1, Dsub2 = Dsub2, Dsub4 = D)
 
 Get indices for different sets of experiments (samples, controls, ...).
 
-<<smallCellNumber3>>=
+<<smallCellNumber7>>=
 IndexSAMPLE = which(TargetAnnotation$group == "sample")
 IndexCTRL = which(TargetAnnotation$group == "SingleKDctrl")
 IndexNEG = which(TargetAnnotation$group == "negctrl")

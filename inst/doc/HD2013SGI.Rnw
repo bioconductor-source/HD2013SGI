@@ -50,17 +50,21 @@ source("http://bioconductor.org/biocLite.R")
 biocLite("HD2013SGI")
 @
 
-\SweaveInput{src/da01_dataAccess.Rnw}
-\SweaveInput{src/da02_figures.Rnw}
-\SweaveInput{src/da11_convertData.Rnw}
-\SweaveInput{src/da12_rawDataProcessing.Rnw}
-\SweaveInput{src/da13_exampleInteractions.Rnw}
-\SweaveInput{src/da14_siRNAcorrelation.Rnw}
-\SweaveInput{src/da15_heatmaps.Rnw}
-\SweaveInput{src/da21_smallCellNumber.Rnw}
-\SweaveInput{src/da22_distributionOfInteractions.Rnw}
-\SweaveInput{src/da23_scatterplots.Rnw}
-\SweaveInput{src/da24_screenplots.Rnw}
-\SweaveInput{src/da25_table.Rnw}
+\input{da01_dataAccess.tex}
+\input{da02_figures.tex}
+\input{da11_convertData.tex}
+\input{da12_rawDataProcessing.tex}
+\input{da13_exampleInteractions.tex}
+\input{da14_siRNAcorrelation.tex}
+\input{da15_heatmaps.tex}
+\input{da21_smallCellNumber.tex}
+\input{da22_distributionOfInteractions.tex}
+\input{da23_scatterplots.tex}
+\input{da24_screenplots.tex}
+\input{da25_table.tex}
 
+<<moreSourceFiles, echo=FALSE,eval=FALSE>>=
+# See the following folder for the source files and R scriptsd of the single sections:
+system.file(file.path("doc","src"))
+@ 
 \end{document}

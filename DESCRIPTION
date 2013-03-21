@@ -8,7 +8,7 @@ Maintainer: Bernd Fischer <bernd.fischer@embl.de>
 Description: Experimental Data and Analysis of the HCT116 Genetic Interaction Matrix.
 License: Artistic-2.0
 LazyLoad: true
-Depends: R (>= 2.10), rhdf5, RColorBrewer, gplots, geneplotter, MASS,
-        grid, hwriter, splots, igraph, abind, limma, vcd, LSD
+Depends: R (>= 2.10), RColorBrewer, gplots, geneplotter, 
+        splots, limma, vcd, LSD
 SystemRequirements: GNU make
 biocViews: ExperimentData
