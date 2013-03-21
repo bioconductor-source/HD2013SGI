@@ -64,7 +64,9 @@ biocLite("HD2013SGI")
 \input{sec13_table.tex}
 
 <<moreSourceFiles, echo=FALSE,eval=FALSE>>=
-# See the following folder for the source files and R scriptsd of the single sections:
-system.file(file.path("doc","src"))
+# the source files for single sections are in the folder:
+system.file(file.path("doc","src"),package="HD2013SGI")
+# the R scripts for single sections are in the folder:
+system.file(file.path("doc"),package="HD2013SGI")
 @ 
 \end{document}
