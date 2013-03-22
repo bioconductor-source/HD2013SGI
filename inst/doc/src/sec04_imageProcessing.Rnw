@@ -8,6 +8,7 @@ The library \Rpackage{HD2013SGI} is loaded.
 library(HD2013SGI)
 @
 
+\subsection{Image segmentation}
 Images were obtained from the InCell Analyzer 2000 as 12-bit TIFF
 images of size 2,048 pixels x 2,048 pixels at three colors. The data
 set comprised 5.6 terabytes. We adapted image segmentation and feature

@@ -339,7 +339,7 @@ features are evaluated separately. Let $F(i)$ be the features that were
 selected after step $i$. In the each step ($i$) for all candidate
 features $f$ a linear regression is fitted on the previously selected features.
 \begin{equation}
-  D_{\cdots\,-\,\cdots\,-\,f\,\cdots} ~ D_{\cdots\,-\,\cdots\,-\,F(i-1)\,\cdots}
+  D_{\cdot\,-\,\cdot\,-\,f\,\cdot} \prop D_{\cdot\,-\,\cdot\,-\,F(i-1)\,\cdot}
 \end{equation}
 Let $r_{\cdots\,\cdots\,f\,\cdots}$ be the residuals of this fit. The
 residuals are a composition of random noise and biological information

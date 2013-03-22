@@ -330,7 +330,7 @@ pdf(file.path("result","Figures","subsamplingNrInteractions.pdf"),
 <<SCNnumbers,results=hide>>=
 plot(c(field1,field2,field4),type="b",pch=19,
      ylab="number of interactions",xlab="",
-     ylim=c(0.0,field4),
+     xlim=c(0.5,3.5),ylim=c(0.0,field4),
      main="",xaxt="n",cex.lab=1.75,cex.axis=1.5)
 axis(side=1,at=1:3,labels=c("","",""))
 axis(side=1,at=1:3,labels=c("1775\ncells","3550\ncells","7100\ncells"),
