@@ -359,8 +359,8 @@ stabilitySelection = HD2013SGIselectByStability(subSampleForStabilitySelection,
 
 The step-wise approach is stopped, when the number of positive
 correlation coefficients is smaller or equal to the number of negative
-correlation coefficients ($\sum_f(\sign(\bar{\rho}_f)>0) <
-\sum_f(\sign(\bar{\rho}_f)<0)$). This criterion is motivated by the
+correlation coefficients ($\sum_f(sign(\bar{\rho}_f)>0) <
+\sum_f(sign(\bar{\rho}_f)<0)$). This criterion is motivated by the
 observation that for random data, half of the correlation coefficients
 is expected to be positive and the other half is expected to be
 negative. 
