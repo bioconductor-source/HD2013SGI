@@ -25,6 +25,8 @@ all:
 	$(R_HOME)/bin/R CMD Sweave src/sec13_table.Rnw
 	$(R_HOME)/bin/R CMD Sweave HD2013SGI.Rnw
 	$(R_HOME)/bin/R CMD pdflatex HD2013SGI.tex
+	$(R_HOME)/bin/R CMD bibtex HD2013SGI
+	$(R_HOME)/bin/R CMD pdflatex HD2013SGI.tex
 	$(R_HOME)/bin/R CMD pdflatex HD2013SGI.tex
 
 clean:

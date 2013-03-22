@@ -13,7 +13,8 @@ dir.create(file.path("result","Figures"),
 
 \subsection{Screen plots}
 
-The $\pi$-scores are mapped back to the screen plate layout. Screen plots of two plates are plotted.
+The $\pi$-scores for the feature \Robject{cell.act.m.majoraxis} are
+mapped back to the screen plate layout. 
 <<screenplots2,results=hide>>=
 F = "cell.act.m.majoraxis"
 EmptyPlate = rep(NA_real_, 24*16)
@@ -32,11 +33,16 @@ for (Rep in seq_len(dim(Interactions$piscore)[6])) {
     }
   }
 }
+@
+Screen plots of two plates are plotted. 
 
+<<screenplots2,echo=FALSE,results=hide>>=
 pdf(file.path("result","Figures","screenPlot.pdf"),width=6,height=2)
+<<screenplots2,results=hide>>=
 plotScreen(z[1:2], ncol=2L, na.fill="gray90",
            main="pi-score (cell.act.m.majoraxis)",
            zrange=c(-3,3),do.names=FALSE)
+<<screenplots2,echo=FALSE,results=hide>>=
 dev.off()
 
 tiff(file.path("result","Figures","screenPlot.tiff"),width=600,height=200)

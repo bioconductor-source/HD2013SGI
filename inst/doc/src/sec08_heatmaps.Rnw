@@ -13,13 +13,20 @@ dir.create(file.path("result","Figures"), recursive=TRUE)
 @
 
 \subsection{Heatmap of all siRNA profiles}
-$\pi$-scores for each siRNA-pair are summarized over two replicates. 
+$\pi$-scores are normalized per feature by dividing with the median
+deviation between two replicates. For each siRNA-pair they are
+summarized over two replicates. 
 <<heatmap2>>=
 PI = Interactions$piscore
 for (k in seq_len(dim(PI)[5])) {
   PI[,,,,k,] = PI[,,,,k,] / Interactions$scale[k]
 }
 PI = (PI[,,,,,1]+PI[,,,,,2]) / 2
+@ 
+The 5-dimensional array is reshaped to a 3-dimensional array by
+flatening the dimensions of target genes and siRNA designs as well as
+query genes and their respective siRNA designs.
+<<heatmap3>>=
 dim(PI) = c(prod(dim(PI)[1:2]),prod(dim(PI)[3:4]),dim(PI)[5])
 dimnames(PI) = list(
   sprintf("%s_%d",rep(Interactions$Anno$target$Symbol,times=2),
@@ -30,9 +37,12 @@ dimnames(PI) = list(
               each=dim(Interactions$piscore)[3])),
   rep(dimnames(Interactions$piscore)[[5]]))
 @
-
-The color scale for interaction scores is cutted from above and below by $\pm$6. Interaction scores between -2 and 2 and colored black.
-<<heatmap3>>=
+The dimension of the new matrix is \Sexpr{dim(PI)[1]} target siRNA
+$\times$ \Sexpr{dim(PI)[2]} query siRNA
+$\times$ \Sexpr{dim(PI)[3]} phenotypic features. The color scale for
+interaction scores is cutted from above and below by
+$\pm$6. Interaction scores between -2 and 2 are colored black. 
+<<heatmap4>>=
 cuts = c(-Inf,
          seq(-6, -2, length.out=(length(HD2013SGI:::colBY)-3)/2),
          0.0,
@@ -41,15 +51,17 @@ cuts = c(-Inf,
 @
 
 A heatmap of $\pi$-scores for all siRNA pairs is plotted.
-<<heatmap4,results=hide>>=
-Y = PI
-hcAll = HD2013SGIorderDim(Y,1)
-I = hcAll$order
-J = HD2013SGIorderDim(Y,2)$order
-K = HD2013SGIorderDim(Y,3)$order
+<<heatmap5,echo=FALSE,results=hide>>=
 pdf(file=file.path("result","Figures","heatmapAll.pdf"),height=14,width=9)
-HD2013SGIHeatmapHuman(x=Y[I,J,K],cuts=cuts,col=HD2013SGI:::colBY,
+@ 
+<<heatmap6,results=hide>>=
+I = HD2013SGIorderDim(PI,1)$order
+J = HD2013SGIorderDim(PI,2)$order
+K = HD2013SGIorderDim(PI,3)$order
+HD2013SGIHeatmapHuman(x=PI[I,J,K],cuts=cuts,col=HD2013SGI:::colBY,
                colnames=TRUE,mcol=10,cexcol=0.5,mrow=0)
+@ 
+<<heatmap7,echo=FALSE,results=hide>>=
 dev.off()
 @
 \begin{center}
@@ -57,8 +69,10 @@ dev.off()
 \end{center}
 
 \subsection{Heatmap of best correlating siRNA profiles}
-$\pi$-scores are summarized over all siRNA designs for the same gene and both replicates resulting in a single $\pi$-score per gene pair. 
-<<heatmap5>>=
+$\pi$-scores are normalized per feature by dividing with the median
+deviation between two replicates. For each gene pair $\pi$-scores are
+summarized over the two replicates and the $2\times 2$ siRNA designs.
+<<heatmap8>>=
 PI = Interactions$piscore
 for (k in seq_len(dim(PI)[5])) {
   PI[,,,,k,] = PI[,,,,k,] / Interactions$scale[k]
@@ -69,27 +83,28 @@ PI = (PI[,1,,1,] + PI[,2,,1,] + PI[,1,,2,] + PI[,2,,2,])/4
 
 Target genes with a minimum of 5 $\pi$-scores with $\left|\pi_{ij}\right|\ge$ 5 are selected.
 
-<<heatmap6>>=
+<<heatmap9>>=
 sel = which(nrOfInteractionsPerTarget >= 5)
-PI2 = PI[sel,,]
+PI = PI[sel,,]
 @
 
 Pearson correlation coefficient are computed comparing interaction profiles between all gene pairs.
-<<heatmap7>>=
-Y = PI2
-hcAll = HD2013SGIorderDim(Y,1)
-dim(Y) = c(dim(Y)[1],prod(dim(Y)[2:3]))
-dimnames(Y)[[1]] = Interactions$Anno$target$Symbol[sel]
-C2 = cor(t(Y),use="pairwise.complete")
+<<heatmap10>>=
+hcAll = HD2013SGIorderDim(PI,1)
+dim(PI) = c(dim(PI)[1],prod(dim(PI)[2:3]))
+dimnames(PI)[[1]] = Interactions$Anno$target$Symbol[sel]
+C2 = cor(t(PI),use="pairwise.complete")
 @
 
 The heatmap of correlation coefficients is plooted.
-<<heatmap8,results=hide>>=
-dd = as.dendrogram(hcAll)
+<<heatmap11,echo=FALSE,results=hide>>=
 pdf(file.path("result","Figures","heatmapSelection.pdf"))
+<<heatmap12,results=hide>>=
+dd = as.dendrogram(hcAll)
 heatmap.2(C2,col=colorRampPalette(brewer.pal(9,"RdBu"))(255),
           breaks=seq(-1,1,length.out=256),
           trace="none",Rowv=dd,Colv=dd)
+<<heatmap13,echo=FALSE,results=hide>>=
 dev.off()
 @
 \begin{center}

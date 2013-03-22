@@ -2,14 +2,12 @@
 \section{Processing of main SGI data}
 \subsection{Preliminaries}
 
-Load HD2013SGI library.
-
+The library \Rpackage{HD2013SGI} is loaded. 
 <<RawDataProcessing1>>=
 library(HD2013SGI)
 @
 
-Load data and screen annotation.
-
+Load data and screen annotation in workspace.
 <<RawDataProcessing2>>=
 data("datamatrixfull",package="HD2013SGI")
 D = datamatrixfull$D
@@ -17,7 +15,7 @@ data("TargetAnnotation",package="HD2013SGI")
 data("QueryAnnotation",package="HD2013SGI")
 @
 
-Create output directories.
+Output directory are created where the data, figures, and tables will be placed in.
 <<RawDataProcessing3>>=
 dir.create(file.path("result","data"),recursive=TRUE,showWarnings=FALSE)
 dir.create(file.path("result","Figures"),recursive=TRUE,showWarnings=FALSE)
@@ -41,24 +39,61 @@ colCTRL[TargetAnnotation$group == "negctrl"] = "red"
 @
 
 \subsection{Transform features and screen normalization}
-A function for a generalized log transformation.
-<<TransformationAndNormalization1>>=
-logtrafo <- function(x,c) {
+Previous genetic interaction screens that were based on a quantitative
+cell viability phenotype were analysed using a multiplicative
+interaction model
+\cite{mani2008defining,schuldiner2005exploration,costanzo2010genetic,%
+  baryshnikova2010quantitative,bandyopadhyay2010rewiring}.
+For model fitting, it is then convenient to transform the data to a
+logarithmic scale. Motivated by
+\cite{horn2011mapping,axelsson2011extracting}, we adapted this
+approach to all features considered here.  Since some features had a
+non-positive range of values, instead of the logarithm we applied a
+generalized logarithm transform~\cite{huber2002variance}
+\begin{equation}\label{eq:glog}
+f(x; c) = \log\left(\frac{x+\sqrt{x^2+c^2}}{2}\right).
+\end{equation}
+<<TransformationAndNormalization1,echo=FALSE>>=
+glog <- function(x,c) {
   log2((x+sqrt(x^2+c^2))/2)
 }
 @
-
-Transform all features with a generalized log transformation. A 3 percent quantile is used as an additive constant in the glog transformation.
-
+This family of functions has one parameter $c$. For $c=0$, the
+function is equivalent to an ordinary logarithm
+transformation. For $c>0$, the function is smooth for all values of
+$x$ (including 0 and negative values), avoiding the singularity of the
+ordinary logarithm at $x=0$, but still approximately equivalent to the
+ordinary logarithm for $x\gg c$ as shown in the following plot.
+<<TransformationAndNormalization1,echo=FALSE,results=hide,results=hide>>=
+px = seq(-1.5, 9, length.out=200)
+trsf = list(
+  log = function(x) log(ifelse(x>0, x, NA_real_)),
+ glog = function(x, c=1) log( (x+sqrt(x^2+c^2))/2 ))
+colores = c("#202020", "RoyalBlue")
+pdf(file.path("result","Figures","supplementaryInformation-glog.pdf"),width=4.2,height=4.2)
+matplot(px, sapply(trsf, do.call, list(px)), type="l", lty=c(2,1), col=colores,
+        lwd=2.5, ylab="f(x)", xlab="x")
+legend("bottomright", fill=colores, legend=names(trsf))
+dev.off()
+@ 
+\begin{center}
+  \includegraphics[width=0.5\textwidth]{result/Figures/supplementaryInformation-glog.pdf}
+\end{center}
+For each feature, we chose $c$ to be
+the $3\%$-quantile of the feature's empirical distribution.
 <<TransformationAndNormalization2>>=
-
 for (i in seq_len(dim(D)[5])) {
   m = quantile(D[,,,,i,],probs=0.03,na.rm=TRUE)
-  D[,,,,i,] = logtrafo(D[,,,,i,],m)
+  D[,,,,i,] = glog(D[,,,,i,],m)
 }
 @
 
-Normalize median per plate and feature to compensate for global differences between replicates and siRNA designs.
+After transformation, to take account of the plate and batch effects
+and differences in efficiency of the siRNA transfection, and additive
+normalization is performed per plate. The plate median is set to be
+equal for all siRNA designs and replicates for each query gene and
+phenotypic feature. This compensates for global differences between
+replicates and siRNA designs. 
 <<TransformationAndNormalization3>>=
 M = apply(D,c(2:6),median,na.rm=TRUE)
 M2 = apply(M, c(2,4), mean)
@@ -71,28 +106,49 @@ dim(M) = dim(D)
 D = D - M
 @
 
-Subtract median and devide by median deviation per feature.
+After transformation, to take account of the fact that the data range
+of the different features was different, data were centered and scaled
+separately for each feature. Center and scale were computed as the
+median and median absolute deviation, respectively. 
 <<TransformationAndNormalization4>>=
 for (i in seq_len(dim(D)[5])) {
   D[,,,,i,] = (D[,,,,i,] - median(D[,,,,i,],na.rm=TRUE)) / 
-    mad(D[,,,,i,],na.rm=TRUE)
+                mad(D[,,,,i,],na.rm=TRUE)
 }
 @
 
-\subsection{Quality control of features}\label{QControlFeatures}
-The dimension of the data cube before quality control is\\
+In the following, we will refer to the array of
+transformed, centered and scaled values as $D_{ijklmr}$ with the
+indices $i$, $j$, $k$, $l$, $m$,$r$ counting over the 6 dimensions of
+the data cube with extensions\\
 \begin{center}
 \begin{tabular}{lrrl}
-& \Sexpr{dim(D)[1]} & target genes \\
-$\times$ & \Sexpr{dim(D)[2]} & siRNA target designs \\
-$\times$ & \Sexpr{dim(D)[3]} & query genes \\
-$\times$ & \Sexpr{dim(D)[4]} & siRNA query designs \\
-$\times$ & \Sexpr{dim(D)[5]} & phenotypic features\\
-$\times$ & \Sexpr{dim(D)[6]} & biological replicates
+         & \Sexpr{dim(D)[1]} & target genes ($i$)\\
+$\times$ & \Sexpr{dim(D)[2]} & siRNA target design ($j$)\\
+$\times$ & \Sexpr{dim(D)[3]} & query genes ($k$)\\
+$\times$ & \Sexpr{dim(D)[4]} & siRNA query designs ($l$)\\
+$\times$ & \Sexpr{dim(D)[5]} & phenotypic features ($m$)\\
+$\times$ & \Sexpr{dim(D)[6]} & biological replicates ($r$)
 \end{tabular}
 \end{center}
 
-Take the mean over all four siRNA design pairs and compute for each feature the Pearson correlation between first and second replicate. 
+\subsection{Quality control of features}\label{QControlFeatures}
+To control for the quality of each feature, its reproducibility over
+replicate measurements was assessed. For each feature $f$,
+we computed the two vectors $\mathbf{v}_{f}^{1}$ and  $\mathbf{v}_{f}^{2}$,
+\begin{equation}
+\mathbf{v}_{f}^{l} = D_{\cdot\,-\,\cdot\,-\,f\,l} \quad\quad\mbox{for }l=1,2.
+\end{equation}
+Here, the notation $-$ indicates averaging over an index, and the notation
+$\cdot$ indicates extraction of the whole subspace spanned by this
+index. Actually, we used only the \Sexpr{length(IndexSAMPLE)} sample genes,
+since target genes contain a number of negative and positive controls. Thus,
+$\mathbf{v}_{m}^{l}$ is a vector with
+\Sexpr{length(IndexSAMPLE)} $\times$
+\Sexpr{dim(D)[3]} $=$
+\Sexpr{length(IndexSAMPLE)*(dim(D)[3])} elements.
+We then computed the correlation coefficient $\rho_{f}$ between
+$\mathbf{v}_{f}^{1}$ and  $\mathbf{v}_{f}^{2}$.
 <<qualityControlFeatures1>>=
 C = rep(NA_real_,dim(D)[5])
 D2 = (D[,1,,1,,] + D[,2,,1,,] + D[,1,,2,,] + D[,2,,2,,]) / 4
@@ -101,11 +157,16 @@ for (i in seq_len(dim(D)[5])) {
 }
 @
 
-Plot the correlation coefficients for all \Sexpr{length(C)} features.
-<<qualityControlFeatures2,results=hide>>=
+We plot the correlation coefficients for all \Sexpr{length(C)} features.
+<<qualityControlFeatures2,echo=FALSE,results=hide>>=
 pdf(file=file.path("result","Figures","QCreproducibilityOfFeatures.pdf"))
-plot(-sort(-C),pch=20,xlab="features",ylab="correlation",ylim=c(0,1))
+@ 
+<<qualityControlFeatures2,results=hide>>=
+plot(-sort(-C),pch=20,xlab="features",ylab="correlation",ylim=c(0,1),
+     cex.lab=1.75,cex.axis=1.5)
 abline(h=0.6)
+@ 
+<<qualityControlFeatures2,echo=FALSE,results=hide>>=
 dev.off()
 @
 \begin{center}
@@ -113,29 +174,33 @@ dev.off()
 \end{center}
 
 As an example the scatter plot of eccentricity measurements is plotted for two replicates.
-<<qualityControlFeatures3,results=hide>>=
+<<qualityControlFeatures3,echo=FALSE,results=hide>>=
 pdf(file=file.path("result","Figures","QCscatterFeaturesBetweenReplicates.pdf"))
+@ 
+<<qualityControlFeatures3,results=hide>>=
 i = "cell.Bact.m.eccentricity"
 plot(as.vector(D2[IndexSAMPLE,,i,1]),as.vector(D2[IndexSAMPLE,,i,2]),
-     pch=20,cex=0.6,xlab="eccentricity replicate 1",
+     pch=20,xlab="eccentricity replicate 1",cex.lab=1.75,cex.axis=1.5,
      ylab="eccentricity replicate 2")
 cc = cor(as.vector(D2[IndexSAMPLE,,i,1]),as.vector(D2[IndexSAMPLE,,i,2]))
-text(x=2,y=-4,sprintf("cor = %0.2f",cc))
+text(x=2,y=-4,sprintf("cor = %0.2f",cc),cex=1.75)
+@ 
+<<qualityControlFeatures3,echo=FALSE,results=hide>>=
 dev.off()
 @
 \begin{center}
 \includegraphics[width=0.5\textwidth]{result/Figures/QCscatterFeaturesBetweenReplicates.pdf}
 \end{center}
 
-Write a table with correlation coefficients.
-<<qualityControlFeatures4>>=
+<<qualityControlFeatures4,echo=FALSE>>=
 I = order(-C)
 write.table(data.frame(name=dimnames(D)[[5]][I],cor=C[I]),
         file=file.path("result","Tables","QC_reproducibilityOfFeatures.txt"),
         sep="\t",quote=FALSE,row.names=FALSE)
 @
-
-Select all features with a correlation of at least 0.6. The number of features passing quality control is \Sexpr{sum(C >= 0.6, na.rm=TRUE)} out of \Sexpr{dim(D)[5]}.
+We selected features with a correlation of at least 0.6 for subsequent
+analysis. \Sexpr{sum(C >= 0.6, na.rm=TRUE)} out of \Sexpr{dim(D)[5]}
+features passed quality control.
 <<qualityControlFeatures5>>=
 I = which(C >= 0.6)
 D = D[,,,,I,,drop=FALSE]
@@ -154,14 +219,24 @@ $\times$ & \Sexpr{dim(D)[6]} & biological replicates
 \end{center}
  
 \subsection{Quality control of siRNA designs}\label{QControlGenes}
+To detect cases where the siRNA reagents for our target genes had
+off-target effects, we compared the phenotypic profiles of the two
+siRNA designs for each target gene. To this end, we computed the
+vectors
+\begin{equation}
+\mathbf{w}_{if}^{j} = D_{ij\,\cdot\, -\, f\, -}
+\end{equation}
+using only those features that passed the quality filter described in
+Section~\ref{QControlFeatures}. We then computed the correlation
+$\tilde{\rho'}_{if}$ between $\mathbf{w}_{if}^{1}$ and
+$\mathbf{w}_{if}^{2}$. The concruence score 
+\begin{equation}
+  \tilde{\rho}_{i}=\tilde{\rho'}_{i\,-}
+\end{equation}
+is the mean over the correlation coefficients of each feature.
 
-For each target siRNA the phenotypic profiles are summarized over two query siRNA and two replicates.
-<<qualityControlsiRNA1>>=
-D1 = (D[,,,1,,1] + D[,,,1,,2] + D[,,,2,,1] + D[,,,2,,2])/4
-@
-
-For each target gene the Pearson correlation coefficient is computed for phenotypic profiles between the two siRNA designs separately for each feature. The mean of correlation coefficients over all features is reported for each target gene.
 <<qualityControlsiRNA2>>=
+D1 = (D[,,,1,,1] + D[,,,1,,2] + D[,,,2,,1] + D[,,,2,,2])/4
 Cdesign1 = rep(NA_real_,dim(D)[1])
 for (k in seq_len(dim(D)[5])) {
   for (i in seq_len(dim(D)[1])) {
@@ -176,35 +251,50 @@ for (k in seq_len(dim(D)[5])) {
 Cdesign1all = Cdesign1all / dim(D)[5]
 @
 
-Plot the correlation coefficients of phenotypic profiles between siRNAs for all target genes.
-<<qualityControlsiRNA3,results=hide>>=
+The congruence scores for all target genes are plotted in decreasing order.
+<<qualityControlsiRNA3,echo=FALSE,results=hide>>=
 pdf(file.path("result","Figures","QCreproducibilityOfTargetsiRNA.pdf"))
-plot(-sort(-Cdesign1all[IndexSAMPLE]), pch=20,
+@ 
+<<qualityControlsiRNA3,results=hide>>=
+plot(-sort(-Cdesign1all[IndexSAMPLE]), pch=20,cex.lab=1.75,cex.axis=1.5,
      xlab="target genes",ylab="correlation",ylim=c(0,1))
 abline(h=0.7)
+@
+<<qualityControlsiRNA3,echo=FALSE,results=hide>>=
 dev.off()
 @
 \begin{center}
 \includegraphics[width=0.5\textwidth]{result/Figures/QCreproducibilityOfTargetsiRNA.pdf}
 \end{center}
 
-All gene with a correlation of the phenotypic profiles of at least 0.7 are selected for further analysis. The number of target genes passing quality control is \Sexpr{sum(Cdesign1all[IndexSAMPLE] >= 0.7,na.rm=TRUE)} out of \Sexpr{length(IndexSAMPLE)}. Additionally, \Sexpr{length(IndexNEG)} negative control target siRNAs selected.
+CHAF1A is an example gene with a low congruence score. Examplary a
+barchart for the cell eccentricity for the double knock-downs of
+both siRNA designs of CHAF1A and siRNA design 1 of DPF2 is plotted.
 
+<<qualityControlsiRNA4,echo=FALSE,results=hide>>=
+pdf(file.path("result","Figures","QCreproducibilityOfTargetsiRNAexample.pdf"),width=2,height=4)
+par(xpd=NA,mar=c(6, 4, 2, 2) + 0.1)
+@ 
 <<qualityControlsiRNA4,results=hide>>=
 f = "cell.Bact.m.eccentricity"
 D1 = D[ TargetAnnotation$Symbol == "CHAF1A",,QueryAnnotation$Symbol == "DPF2",1,f,]
-pdf(file.path("result","Figures","QCreproducibilityOfTargetsiRNAexample.pdf"),width=2,height=4)
-par(xpd=NA)
 bp = barplot(apply(D1,1,mean),ylab="Cell eccentricity",
         names.arg=c("CHAF1A #1\nDPF2 #1","CHAF1A #2\nDPF2 #1"),las=2)
 points(bp,D1[,1])
 points(bp,D1[,2])
+@ 
+<<qualityControlsiRNA4,echo=FALSE,results=hide>>=
 dev.off()
 @
 \begin{center}
 \includegraphics[width=0.25\textwidth]{result/Figures/QCreproducibilityOfTargetsiRNAexample.pdf}
 \end{center}
 
+Target gene $i$ was selected for subsequent analysis if
+$\tilde{\rho}_i\ge0.7$. The number of target genes passing quality
+control is \Sexpr{sum(Cdesign1all[IndexSAMPLE] >= 0.7,na.rm=TRUE)} out
+of \Sexpr{length(IndexSAMPLE)}. Additionally, \Sexpr{length(IndexNEG)}
+negative control target siRNAs selected. 
 
 <<qualityControlsiRNA4>>=
 I = IndexSAMPLE[Cdesign1all[IndexSAMPLE] >= 0.7]

@@ -14,49 +14,30 @@ dir.create(file.path("result","Figures"),
 
 \subsection{Examples of single knock down phenotypes}\label{exampleSingleKDPhenotypes}
 
-Main effects are first summarized over all four siRNA design pairs and divided by the median deviation to compute a z-score. Then, mean and standard deviation of main effects are calculated over the two replicates of the screen.
-<<exampleSingleKnockDownEffects2>>=
-MT1 = apply(mainEffects$target,c(1,4,5),mean,na.rm=TRUE)
-for (i in seq_len(dim(MT1)[2])) {
-  for (j in seq_len(dim(MT1)[3])) {
-    MT1[,i,j] = MT1[,i,j] / mad(MT1[,i,j],center=0.0)
-  }
-}
-MT = apply(MT1,c(1,2),mean,na.rm=TRUE)
-SD = apply(MT1,c(1,2),sd,na.rm=TRUE)
+Main effects are first summarized over all four siRNA design pairs and
+divided by the median deviation to compute a z-score. Bars show the
+mean of main effects calculated over the two replicates of the
+screen. Circle symbols represent individual replicate
+measurements. Main effects for five different phenotypes are plotted
+for the two genes SETD8 and TCF20.
+
+<<exampleSingleKnockDownEffects2,results=hide>>=
+features = c("count", "nuc.0.s.area","nuc.0.m.eccentricity",
+             "cell.Bact.m.eccentricity","cell.act.m.majoraxis")
+ylim = c(-2.947124,7.329518)
 @
-
-Main effects for five different phenotypes are plotted for two genes.
-
-<<exampleSingleKnockDownEffects3,results=hide>>=
-f = c("count", "nuc.0.s.area","nuc.0.m.eccentricity",
-      "cell.Bact.m.eccentricity","cell.act.m.majoraxis")
-MT2 = MT[,f]
-SD2 = SD[,f]
-colnames(MT2) = c("count", "nuclear area", "nuclear eccentricity",
-                 "cell eccentricity", "actin majoraxis")
-ylim=range(c(MT2["SETD8",],MT2["TCF20",]))
-
-g = "SETD8"
-
+<<exampleSingleKnockDownEffects3,echo=FALSE,results=hide>>=
 pdf(file=file.path("result","Figures","singleKnockDown-SETD8.pdf"),
     width=2.5,height=5)
-par(mar=c(12,4,4,1)+0.1,xpd=NA)
-bp = barplot(MT2[g,],ylab="z-score",ylim=ylim,las=2,main=g)
-abline(h=0.0,xpd=FALSE)
-points(bp,MT1[g,f,1])
-points(bp,MT1[g,f,2])
+<<exampleSingleKnockDownEffects4,results=hide>>=
+HD2013SGI:::plotExampleSingleGeneEffects(gene="SETD8",features,mainEffects,ylim)
+<<exampleSingleKnockDownEffects5,echo=FALSE,results=hide>>=
 dev.off()
-
-g = "TCF20"
-
 pdf(file=file.path("result","Figures","singleKnockDown-TCF20.pdf"),
     width=2.5,height=5)
-par(mar=c(12,4,4,1)+0.1,xpd=NA)
-bp = barplot(MT2[g,],ylab="z-score",ylim=ylim,las=2,main=g)
-abline(h=0.0,xpd=FALSE)
-points(bp,MT1[g,f,1])
-points(bp,MT1[g,f,2])
+<<exampleSingleKnockDownEffects6,results=hide>>=
+HD2013SGI:::plotExampleSingleGeneEffects(gene="TCF20",features,mainEffects,ylim)
+<<exampleSingleKnockDownEffects7,echo=FALSE,results=hide>>=
 dev.off()
 @
 \begin{center}
@@ -66,56 +47,27 @@ dev.off()
 
 \subsection{Example of genetic interactions}\label{exampleDoubleKDPhenotypes}
 
-Barplots for example interactions.
-<<exampleInteractions1,results=hide>>=
-plotExampleInteractions <- function(f,target,query,Interactions,mainEffects) {
-  MT = mainEffects$target[target,,,f,]
-  dim(MT) = c(prod(dim(MT)[1:2]),dim(MT)[3])
-  MQ = mainEffects$query[,query,,f,]
-  dim(MQ) = c(prod(dim(MQ)[1:2]),dim(MQ)[3])
-  PI = Interactions$piscore
-  PI = PI[target,,query,,f,]
-  dim(PI) = c(prod(dim(PI)[1:2]),dim(PI)[3])
-  EXP = MT+MQ
-  DKD = MT+MQ+PI
-  X = apply(PI,1,mean)
-  names(X) = c("pi11","pi21","pi12","pi22")
-  SD = apply(PI,1,sd)
-  pv = apply(PI,1,function(x) { t.test(x)$p.value } )
-#  I = seq_len(dim(PI)[1])
-  par(xpd=NA,mar=c(8,5,4,1))
-  bp=barplot(X,las=2, #col=col,
-             main=sprintf("t=%s q=%s ph=%s",target,query,f),
-             names.arg = rep("",4))
-  points(bp,PI[,1])
-  points(bp,PI[,2])
-  abline(h=0.0,xpd=FALSE)
-  r = range(X)
-  if (r[1] > 0) { r[1] = 0.0 }
-  if (r[2] < 0) { r[2] = 0.0 }
-  d = diff(r)
-  A = c("+")
-  B = c("+")
-  C = c("-")
-  text(x=bp,y=rep(r[1]-2*d/7,4),c(A,C,A,C))
-  text(x=bp,y=rep(r[1]-3*d/7,4),c(C,A,C,A))
-  text(x=bp,y=rep(r[1]-4*d/7,4),c(B,B,C,C))
-  text(x=bp,y=rep(r[1]-5*d/7,4),c(C,C,B,B))
-  text(rep(0.0,4),r[1] - (2:5)*d/7,adj=c(1,0.5),
-       sprintf("%s #%d",c(target,target,query,query),c(1,2,1,2)))
-}
-
+Barcharts for example interactions are plotted.
+<<exampleInteractions1,echo=FALSE,results=hide>>=
 pdf(file=file.path("result","Figures","interaction-PHF16-SETD8.pdf"),
     height=4,width=3)
-plotExampleInteractions(f="cell.act.m.majoraxis",
-                        target="PHF16",query="SETD8",
-                        Interactions, mainEffects)
+@
+<<exampleInteractions1,results=hide>>=
+HD2013SGI:::plotExampleInteractions(feature="cell.act.m.majoraxis",
+                                    target="PHF16",query="SETD8",
+                                    Interactions, mainEffects)
+@
+<<exampleInteractions2,echo=FALSE,results=hide>>=
 dev.off()
 pdf(file=file.path("result","Figures","interaction-SIN3A-RUVBL1.pdf"),
     height=4,width=3)
-plotExampleInteractions(f="nuc.0.m.eccentricity",
-                        target="SIN3A",query="RUVBL1",
-                        Interactions, mainEffects)
+@
+<<exampleInteractions3,results=hide>>=
+HD2013SGI:::plotExampleInteractions(feature="nuc.0.m.eccentricity",
+                                    target="SIN3A",query="RUVBL1",
+                                    Interactions, mainEffects)
+@
+<<exampleInteractions4,echo=FALSE,results=hide>>=
 dev.off()
 @
 
@@ -126,39 +78,55 @@ dev.off()
 
 \subsection{Overlap of interactions}\label{OverlapOfInteractions}
 
-To show the overlap of interactions called in different phenotypes, Interactions with an adjusted p-value of 0.01 are considered.
+To show the overlap of interactions called in different phenotypes,
+Interactions with an adjusted p-value of 0.01 are considered. 
 <<overlapOfInteractions1>>=
-f = c("nuc.0.s.area","nuc.0.m.majoraxis",
-      "cell.Bact.m.eccentricity","cell.act.m.majoraxis")
-PI = Interactions$padj <= 0.01
-PI[is.na(PI)] = FALSE
-dim(PI) = c(prod(dim(PI)[1:4]),dim(PI)[5])
-row.names(PI) = sprintf("A%d",seq_len(nrow(PI)))
-colnames(PI) = Interactions$Anno$phenotype
-PI = PI[,f]
-
-I = which(apply(PI,1,any))
-Overlap = table(as.data.frame(PI[I,]))
+features = c("nuc.0.s.area","nuc.0.m.majoraxis",
+             "cell.Bact.m.eccentricity","cell.act.m.majoraxis")
+SIG = Interactions$padj[,,,,features] <= 0.01
+SIG[is.na(SIG)] = FALSE
+@ 
+The 5-dimensional array of boolean values indicating the significant
+interactions is reshaped to a 2-dimensional table with one column for
+each feature.
+<<overlapOfInteractions2>>=
+dim(SIG) = c(prod(dim(SIG)[1:4]),dim(SIG)[5])
+row.names(SIG) = sprintf("A%d",seq_len(nrow(SIG)))
+colnames(SIG) = HD2013SGI:::humanReadableNames[features]
+@
+A contingency table is computed considering all gene pairs that interact in
+at leat one phenotype.
+<<overlapOfInteractions3>>=
+I = which(apply(SIG,1,any))
+Overlap = table(as.data.frame(SIG[I,]))
 print(Overlap)
 save(Overlap, file=file.path("result","Figures","Overlap.rda"))
 @
 
-A mosaic plot of the Venn diagram.
-<<overlapOfInteractions2,results=hide>>=
-pdf(file.path("result","Figures","Mosaicplot.pdf"))
-mosaic(Overlap, shade = TRUE)
-dev.off()
-@
-\begin{center}
-\includegraphics[width=0.7\textwidth]{result/Figures/Mosaicplot.pdf}
-\end{center}
-
-Write lists of identifiers for generating a Venn diagram with a webtool (e.g. http://bioinfogp.cnb.csic.es/tools/venny/index.html).
-<<overlapOfInteractions3,eval=FALSE>>=
-L = apply(PI[,f],2,function(x) names(which(x)))
-for (i in 1:4) {
+A Venn diagram can be generated with a webtool
+(e.g. http://bioinfogp.cnb.csic.es/tools/venny/index.html). Lists of
+identifiers of the significant genes are written be be used with the webtools.
+<<overlapOfInteractions4,eval=FALSE>>=
+L = apply(SIG,2,function(x) names(which(x)))
+for (i in seq_along(L)) {
   writeLines(L[[i]],file.path("result","Figures",
                               sprintf("interactionlist%d.txt",i)))
 }
+@ 
+
+In the original paper a Venn diagram is shown. An alternative plot
+where the region areas are proportional to the numbers, is a mosaic
+plot as shown here.
+<<overlapOfInteractions5,echo=FALSE,results=hide>>=
+pdf(file.path("result","Figures","Mosaicplot.pdf"))
 @
+<<overlapOfInteractions6,echo=FALSE,results=hide>>=
+mosaic(Overlap, shade = TRUE)
+@ 
+<<overlapOfInteractions7,results=hide>>=
+dev.off()
+@
+\begin{center}
+  \includegraphics[width=0.7\textwidth]{result/Figures/Mosaicplot.pdf}
+\end{center}
 

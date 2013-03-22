@@ -15,7 +15,9 @@
 }
 
 %\pagestyle{empty}
-\title{\textsf{\textbf{\thetitle}}}
+\title{\textsf{\textbf{Mapping genetic interactions in human cancer
+      cells with RNAi and multiparametric phenotyping}\\ Christina Laufer, Bernd Fischer, Maximilian Billman, Wolfgang
+Huber, and Michael Boutros (2013)}}
 \author{Bernd Fischer\\[1em]European Molecular Biology Laboratory (EMBL),\\ Heidelberg, Germany\\
 \texttt{bernd.fischer@embl.de}}
 
@@ -69,4 +71,9 @@ system.file(file.path("doc","src"),package="HD2013SGI")
 # the R scripts for single sections are in the folder:
 system.file(file.path("doc"),package="HD2013SGI")
 @ 
+
+\bibliographystyle{unsrt}
+\bibliography{literature}
+
+
 \end{document}

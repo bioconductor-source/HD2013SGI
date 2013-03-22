@@ -13,11 +13,17 @@ dir.create(file.path("result","Figures"),showWarnings=FALSE,recursive=TRUE)
 @
 
 \subsection{Distribution of interactions}
-Count the number of positive and negative interactions for each phenotypic feature.
+The mean of the interaction scores is taken over the two replicates.
 <<distributionOfInteractions2,results=hide>>=
 PI = Interactions$piscore
 PI = (PI[,,,,,1]+PI[,,,,,2]) / 2
+@ 
 
+The number of positive and negative interactions for each
+phenotypic feature is counted. Only significant interactions (FDR <=
+0.01) are considered.
+
+<<distributionOfInteractions3,results=hide>>=
 npos = rep(NA_integer_, dim(PI)[5])
 nneg = rep(NA_integer_, dim(PI)[5])
 for (i in seq_len(dim(PI)[5])) {
@@ -26,19 +32,31 @@ for (i in seq_len(dim(PI)[5])) {
   npos[i] = sum(pi >= 0)
   nneg[i] = sum(pi < 0)
 }
+@ 
+
+\Robject{npos} (\Robject{nneg}) contains the number of positive
+(negative) genetic interactions per phenotypic feature. The features
+are sorted by the total number (pos. and neg.) interactions starting
+with the largest number.
+<<distributionOfInteractions4,results=hide>>=
 I = order(-(npos+nneg))
 npos = npos[I]
 nneg = nneg[I]
+@ 
+A barchart is plotted showing the number of positive and negative interactions.
+<<distributionOfInteractions5,echo=FALSE,results=hide>>=
 pdf(file.path("result","Figures","distributionOfInteractions.pdf"),
     width=5,height=5)
+<<distributionOfInteractions6,results=hide>>=
 barplot(rbind(npos,nneg),beside=TRUE,
         col=HD2013SGI:::Colors[c(3,1)],
         xlab="phenotypic features",ylab="number of interactions")
 legend("topright",legend=c("pos. interactions", "neg. interactions"),
        fill=HD2013SGI:::Colors[c(3,1)])
+<<distributionOfInteractions7,echo=FALSE,results=hide>>=
 dev.off()
 @
 
 \begin{center}
-\includegraphics[width=0.7\textwidth]{result/Figures/distributionOfInteractions.pdf}
+  \includegraphics[width=0.7\textwidth]{result/Figures/distributionOfInteractions.pdf}
 \end{center}

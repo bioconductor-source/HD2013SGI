@@ -1,40 +1,42 @@
 
-\section{Convert data from plate order to SGI-arrary}
-
-Convert data from primary plate readout to an multi-dimensional SGI-array.
+\section{Convert data from plate order to multi-dimensional SGI-arrary}
 
 \subsection{Preliminaries}
+<<convertData1,echo=FALSE,results=hide>>=
+NROW = 15
+NCOL = 23
+NFIELD = 4
+@ 
 
-Load HD2013SGI library.
-
-<<convertData1>>=
+The library \Rpackage{HD2013SGI} is loaded. 
+<<convertData2>>=
 library(HD2013SGI)
 @
 
-Load screening data.
-
-<<convertData1>>=
+Load screening data in workspace.
+<<convertData3>>=
 data("featuresPerWell", package="HD2013SGI")
 @
+After image segmentation and feature extraction a feature vector is
+available for each image field. The data is represented as a 2
+dimensional table with extension \Sexpr{nrow(featuresPerWell$data)} 
+image fields $\times$ \Sexpr{ncol(featuresPerWell$data)} phenotypic
+features. There are
+\Sexpr{length(unique(featuresPerWell$Anno$plate))} plates in the
+screen. The plates have \Sexpr{NROW} rows and \Sexpr{NCOL}
+columns. \Sexpr{NFIELD} fields are imaged per well. This data will be
+reordered to a 6-dimensional array with one dimension each for target
+designs, features, and replicates.
 
-Create output directories.
-
-<<convertData1>>=
+An output directory is created where the data array will be placed in.
+<<convertData4>>=
 dir.create(file.path("result","data"),recursive=TRUE,showWarnings=FALSE)
 @
 
 \subsection{Parse plate barcodes to annotate the plates}
-<<convertData2,echo=FALSE,results=hide>>=
-NROW = 15
-NCOL = 23
-NFIELD = 4
-@
 
-Plate barcodes and plate numbers are extracted from the annotation. 
-
-The plates have \Sexpr{NROW} rows and \Sexpr{NCOL} columns. \Sexpr{NFIELD} fields are imaged per well. 
-
-The plate annotation is summarized in a data frame.
+Plate barcodes and plate numbers are extracted from the screen
+annotation. The plate annotation is summarized in a data frame.
 <<convertData3>>=
 plates = featuresPerWell$Anno[seq(1,nrow(featuresPerWell$Anno),
                                   by=NFIELD*NCOL*NROW),"plate"]
@@ -42,8 +44,8 @@ PlateAnnotation = HD2013SGI:::parsePlateBarcodes(plates)
 head(PlateAnnotation)
 @
 
-The names of all query genes are extracted.
-
+The names of all query genes, siRNA designs, and replicates are
+extracted for all sample experiments.
 <<convertData4>>=
 S = which(PlateAnnotation$queryGroup=="sample")
 tdnames = unique(PlateAnnotation$targetDesign[S])
@@ -53,29 +55,33 @@ repnames = unique(PlateAnnotation$replicate[S])
 @
 
 \subsection{Reorder data}
-The data is reordered and saved as an array. The mean of the measurements in the four fields per well is taken.
+A 7-dimensional data array is created and filled with the data. The
+target genes are spreat over the three dimensions filed, col, and
+row. The mean of the measurements in the $NFIELD$ fields per well is
+taken.
 <<convertData9>>=
-D = array(0.0, dim=c(field=NFIELD,col=NCOL,row=NROW,
+D = array(0.0, dim=c(field=NFIELD, col=NCOL, row=NROW,
                      features=dim(featuresPerWell$data)[2],
                      targetDesign=length(tdnames),
-                     query=length(qnames),queryDesign=length(qdnames),
+                     query=length(qnames),
+                     queryDesign=length(qdnames),
                      replicate=length(repnames)))
 dimnames(D) = list(field=seq_len(NFIELD),
-                   col=seq_len(NCOL),row=LETTERS[seq_len(NROW)+1],
+                   col=seq_len(NCOL), row=LETTERS[seq_len(NROW)+1],
                    features=dimnames(featuresPerWell$data)[[2]],
                    targetDesign=tdnames,
-                   queryGene=qnames,queryDesign=qdnames,replicate=repnames)
-z=0
+                   queryGene=qnames,
+                   queryDesign=qdnames,
+                   replicate=repnames)
 for (td in tdnames) {
   for (q in qnames) {
     for (qd in qdnames) {
       for (r in repnames) {
         plate = PlateAnnotation$plate[
-                      which((PlateAnnotation$targetDesign == td) &
-          (PlateAnnotation$queryGene == q) &
-          (PlateAnnotation$queryDesign == qd) &
-          (PlateAnnotation$replicate == r) ) ]
-        z=z+1
+                    which((PlateAnnotation$targetDesign == td) &
+                          (PlateAnnotation$queryGene    == q ) &
+                          (PlateAnnotation$queryDesign  == qd) &
+                          (PlateAnnotation$replicate    == r )) ]
         I = which(featuresPerWell$Anno$plate == plate)
         D[,,,,td,q,qd,r] = as.vector(featuresPerWell$data[I,])
       }
@@ -84,8 +90,11 @@ for (td in tdnames) {
 }
 D[is.na(D)] = 0.0
 D = (D[1,,,,,,,] + D[2,,,,,,,] + D[3,,,,,,,] + D[4,,,,,,,])/4
-# D = apply(D,2:8,mean,na.rm=TRUE)
-
+# faster than D = apply(D,2:8,mean,na.rm=TRUE)
+@ 
+The dimensions are reordered and row and column dimensions are merged
+into a single dimension for target genes. The data is saved to disk.
+<<convertData10>>=
 D = aperm(D,c(1,2,4,5,6,3,7))
 dn = dimnames(D)
 dim(D) = c(prod(dim(D)[1:2]),dim(D)[3:7])
@@ -110,3 +119,7 @@ $\times$ & \Sexpr{dim(datamatrixfull$D)[5]} & phenotypic features\\
 $\times$ & \Sexpr{dim(datamatrixfull$D)[6]} & biological replicates
 \end{tabular}
 \end{center}
+
+A precomputed version of the \Robject{datamatrix} is available from
+the package and can be loaded by \Robject{data(datamatrix,
+  package="HD2013SGI")}.

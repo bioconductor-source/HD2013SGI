@@ -323,11 +323,20 @@ The number of significantly interacting siRNA pairs is plotted.
 field1 = sum(InteractionsSub1$padj <= 0.01,na.rm=TRUE)
 field2 = sum(InteractionsSub2$padj <= 0.01,na.rm=TRUE)
 field4 = sum(InteractionsSub4$padj <= 0.01,na.rm=TRUE)
+<<SCNnumbers,echo=FALSE,results=hide>>=
 pdf(file.path("result","Figures","subsamplingNrInteractions.pdf"),
     height=5,width=5)
-barplot(c(field1,field2,field4),
-        names.arg=c("1775\ncells","3550\ncells","7100\ncells"),
-        ylab="number of interactions",main="")
+@ 
+<<SCNnumbers,results=hide>>=
+plot(c(field1,field2,field4),type="b",pch=19,
+     ylab="number of interactions",xlab="",
+     ylim=c(0.0,field4),
+     main="",xaxt="n",cex.lab=1.75,cex.axis=1.5)
+axis(side=1,at=1:3,labels=c("","",""))
+axis(side=1,at=1:3,labels=c("1775\ncells","3550\ncells","7100\ncells"),
+     line=1.5,lwd=0,cex.axis=1.5)
+@ 
+<<SCNnumbers,echo=FALSE,results=hide>>=
 dev.off()
 @
 \begin{center}

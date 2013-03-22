@@ -12,22 +12,36 @@ dir.create(file.path("result","Tables"),
 @
 
 \subsection{Main table of interaction scores}
-
+The mean of the interaction scores is taken over the two
+replicates.
 <<mainResultTable2>>=
 PI = Interactions$piscore
 PI = (PI[,,,,,1] + PI[,,,,,2])/2
 PADJ = Interactions$padj
 PI[is.na(PADJ)] = NA
-
+@
+The 5-dimensional arrays of $\pi$-scores and adjusted p-values are
+reshaped to a 2-dimensional matrix with one column per phenotypic
+feature. 
+<<mainResultTable2>>=
 dim(PI) = c(prod(dim(PI)[1:4]),dim(PI)[5])
 dim(PADJ) = c(prod(dim(PADJ)[1:4]),dim(PADJ)[5])
+@ 
 
+The two matrices are merged in a way such that $\pi$-scores and
+adjusted p-values are interlaced and the two columns per features are
+next to each other.
+<<mainResultTable3>>=
 V = cbind(PI, PADJ)
 V = V[,rep(seq_len(dim(PI)[2]),each=2)+rep(c(0,dim(PI)[2]),times=dim(PI)[2])]
 colnames(V) = sprintf("%s.%s",rep(c("pi-score","padj"),times=dim(PI)[2]),
         rep(HD2013SGI:::humanReadableNames[ Interactions$Anno$phenotype ],
                           each=2))
+@ 
 
+Annotation of the target and query gene names and the index of siRNA
+design are added to the table. The table is written to a text file.
+<<mainResultTable4>>=
 target =       rep(Interactions$Anno$target$Symbol,
                    times=prod(dim(Interactions$piscore)[c(2,3,4)]))
 targetDesign = rep(rep(c("#1","#2"),

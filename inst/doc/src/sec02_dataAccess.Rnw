@@ -3,27 +3,34 @@
 \section{Data access}\label{dataAccess}
 
 The interaction matrix can be loaded by 
-<<dataAcceess1,eval=FALSE>>=
+<<dataAcceess1,results=hide>>=
 library(HD2013SGI)
 data(Interactions, package="HD2013SGI")
 @ 
 
+\Robject{Interactions\$piscore} contains a 6-dimensional array of
+$\pi$-scores, \Robject{Interactions\$padj} is a 5-dimensional
+array of BH-adjusted p-values and \Robject{Interactions\$Anno}
+contains annotation for target genes, query genes, and phenotypes.
 You can type
 <<dataAccess2,eval=FALSE>>=
 ?Interactions
 @
 to see a documentation of the interaction data. The same works for any
 of the below data objects. 
-
-All intermediate results are precomputed and can be loaded. the following datasets are available:
+All intermediate results are precomputed and can be loaded. The following
+datasets are available:
 \begin{itemize}
+  \item {\bf Interactions} The genetic interaction data (pi-scores,
+    p-values, and annotation). {\bf This is the main data source of this package.}
   \item {\bf featuresPerWell} The screen data in screen order
-  \item {\bf datamatrixfull} The phenotype data of all pairwise genetic perturbation experiments before quality control and feature selection
+  \item {\bf datamatrixfull} The phenotype data of all pairwise genetic
+    perturbation experiments before quality control and feature selection
   \item {\bf QueryAnnotation} Annotation of all the query genes in the screen
   \item {\bf TargetAnnotation} Annotation of all target genes in the screen
   \item {\bf stabilitySelection} Results from the feature selection step
-  \item {\bf datamatrix} The phenotype data of all pairwise genetic perturbation experiments after quality control and feature selection
+  \item {\bf datamatrix} The phenotype data of all pairwise genetic perturbation
+    experiments after quality control and feature selection
   \item {\bf mainEffects} Estimated main effects (single knock down effect)
   \item {\bf nrOfInteractionsPerTarget} Number of interactions per target gene
-  \item {\bf Interactions} The genetic interaction data (pi-scores, p-values, and annotation)
 \end{itemize}
