@@ -332,27 +332,57 @@ subSampleForStabilitySelection = list(D = D1[Sample,,],
                                       phenotype = dimnames(D)[[5]])
 @
 
-Non-redundant features are selected. The number-of-cells is manually preselected because of its biological interest. All other features are selected automatically in a sequential way. In each step all candidate features are evaluated separately. A linear regression is fitted on the previously selected features. The residuals are a composition of random noise and biological information that is non-redundant to the previously selected features. To estimate if there still exists unexplained biological signal, the Pearson correlation coefficient of the residuals between the two biological replicates is computed. The feature with the largest correlation coefficient is selected.
+Non-redundant features are selected. The number-of-cells is manually
+preselected because of its biological interest. All other features are
+selected automatically in a sequential way. In each step all candidate
+features are evaluated separately. Let $F(i)$ be the features that were
+selected after step $i$. In the each step ($i$) for all candidate
+features $f$ a linear regression is fitted on the previously selected features.
+\begin{equation}
+  D_{\cdots\,-\,\cdots\,-\,f\,\cdots} ~ D_{\cdots\,-\,\cdots\,-\,F(i-1)\,\cdots}
+\end{equation}
+Let $r_{\cdots\,\cdots\,f\,\cdots}$ be the residuals of this fit. The
+residuals are a composition of random noise and biological information
+that is non-redundant to the previously selected features. To estimate if there still exists unexplained biological signal, the
+Pearson correlation coefficient $\bar{\rho}_f$  of the residual
+vectors $r_{\cdots\,\cdots\,f\,1}$ and $r_{\cdots\,\cdots\,f\,2}$
+between the two biological replicates is computed. It can be seen as a
+proxy for the signal-to-noise ratio of these residuals.  
+
+The feature with the largest
+correlation coefficient $\bar{\rho}_f$ is selected.
 <<featureSelection3>>=
 stabilitySelection = HD2013SGIselectByStability(subSampleForStabilitySelection,
                                        preselect = c("count"),
                                        Rdim = 25, verbose = TRUE)
 @
 
-The step-wise approach is stopped, when the number of positive correlation coefficients is smaller or equal to the number of negative correlation coefficients. This criterion is motivated by the observation that for random data, half of the correlation coefficients is expected to be positive and the other half is expected to be negative.
+The step-wise approach is stopped, when the number of positive
+correlation coefficients is smaller or equal to the number of negative
+correlation coefficients ($\sum_f(\sign(\bar{\rho}_f)>0) <
+\sum_f(\sign(\bar{\rho}_f)<0)$). This criterion is motivated by the
+observation that for random data, half of the correlation coefficients
+is expected to be positive and the other half is expected to be
+negative. 
 <<featureSelection4>>=
 Sel = stabilitySelection$ratioPositive >= 0.5
 @
 
-A set of \Sexpr{sum(Sel)} features is shown to contain non-redundant information. At first we plot the correlation coefficients of the residual features which is considered to be the information content.
-<<featureSelection5,results=hide>>=
+A set of \Sexpr{sum(Sel)} features is shown to contain non-redundant
+information. At first we plot the correlation coefficients of the
+residual features which is considered to be the information content. 
+<<featureSelection5,echo=FALSE,results=hide>>=
 col = brewer.pal(3,"Pastel1")[1:2]
 pdf(file.path("result","Figures","FeatureSelectionInformationgain.pdf"))
 par(mar=c(13,4,1,1))
+@ 
+<<featureSelection5,results=hide>>=
 barplot(stabilitySelection$correlation, 
         names.arg=HD2013SGI:::humanReadableNames[stabilitySelection$selected],
         col=ifelse(Sel, col[2], col[1]),
         ylim=c(0,1),las=2,ylab="information gain")
+@ 
+<<featureSelection5,echo=FALSE,results=hide>>=
 dev.off()
 @
 \begin{center}
@@ -360,13 +390,17 @@ dev.off()
 \end{center}
 
 Now we plot the fraction of positive correlation coefficients that serves as a stop criterion.
-<<featureSelection6,results=hide>>=
+<<featureSelection6,echo=FALSE,results=hide>>=
 pdf(file.path("result","Figures","FeatureSelectionRatioPositive.pdf"))
 par(mar=c(13,4,1,1))
+@ 
+<<featureSelection6,results=hide>>=
 barplot(stabilitySelection$ratioPositive-0.5, 
         names.arg=HD2013SGI:::humanReadableNames[stabilitySelection$selected],
         offset=0.5,col=ifelse(Sel, col[2], col[1]),ylim=c(0,1),
         las=2,ylab="fraction positive correlated")
+@ 
+<<featureSelection6,echo=FALSE,results=hide>>=
 dev.off()
 @
 \begin{center}
@@ -403,7 +437,11 @@ save(datamatrix, file=file.path("result","data","datamatrix.rda"))
 @
 
 \subsection{Pairwise interaction scores}
-Pairwise interaction scores ($\pi$=scores) are estimated using a robust linear fit. The query main effects are lifted such that they equal to the mean of the single knock down measurements of the query genes (target siRNA is a scrambled sequence serving as negative control). 
+Pairwise interaction scores ($\pi$=scores) are estimated using a
+robust linear fit. The query main effects are lifted such that they
+equal to the mean of the single knock down measurements of the query
+genes (target siRNA is a scrambled sequence serving as negative
+control).  
 <<pairwiseInteractionScores1>>=
 D = datamatrix$D
 pimatrix = datamatrix
@@ -431,7 +469,10 @@ save(mainEffects, file=file.path("result","data","mainEffects.rda"))
 @
 
 \subsection{Statistical testing of interaction terms}
-For statistical testing the interaction terms that differ by 4 times the median deviation of the interaction scores are flagged as outliers. Afterwards the interaction terms are tested for significance by a moderated t-test implemented in the R-package limma.
+For statistical testing the interaction terms that differ by 4 times
+the median deviation of the interaction scores are flagged as
+outliers. Afterwards the interaction terms are tested for significance
+by a moderated t-test implemented in the R-package limma. 
 <<callingInteractions1>>=
 D = pimatrix$D
 PADJ = D[pimatrix$Anno$target$group == "sample",,,,,1]
@@ -454,7 +495,9 @@ for (i in seq_len(dim(D)[5])) {
 }
 @
 
-$\pi$-scores for each siRNA pair are summarized over both replicates. Furthermore interaction scores are divided by their median deviation over all siRNA pairs, to provide comparable measurements.
+$\pi$-scores for each siRNA pair are summarized over both
+replicates. Furthermore interaction scores are divided by their median
+deviation over all siRNA pairs, to provide comparable measurements. 
 <<callingInteractions2>>=
 PI = pimatrix$D
 PI = PI[pimatrix$Anno$target$group == "sample",,,,,]
