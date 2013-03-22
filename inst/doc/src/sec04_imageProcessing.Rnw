@@ -1,0 +1,35 @@
+
+\section{Image segmentation and feature extraction}
+
+\subsection{Preliminaries}
+
+The library \Rpackage{HD2013SGI} is loaded. 
+<<convertData2>>=
+library(HD2013SGI)
+@
+
+\subsection{Image segmentation}
+Images were obtained from the InCell Analyzer 2000 as 12-bit TIFF
+images of size 2,048 pixels × 2,048 pixels at three colors. The data
+set comprised 5.6 terabytes. We adapted image segmentation and feature
+extraction methods from previous
+work\cite{carpenter2006cellprofiler,fuchs2010clustering,held2010cellcognition},
+using the R package EBImage\cite{pau2010ebimage}. Nuclei were
+segmented by adaptive thresholding with a window size of 10 pixels
+(corresponding to 7.4 μm) and subsequent morphological
+filters. Nucleus segmentation was extended to the cell body by a
+Voronoi tessellation–based propagation
+algorithm\cite{jones2005voronoi}. 
+
+\subsection{Feature extraction}
+Features for intensity, shape and texture were extracted for each cell
+from the DAPI channel using the nucleus segmentation and from the
+actin and tubulin channels using the mask of the cell body. Additional
+features were extracted from the joint distribution of the DAPI and
+the tubulin signals using the cell body mask. Features were summarized
+per experiment by the arithmetic mean over all cells. The number of
+segmented nuclei was used as a proxy for cell count. 
+
+A precomputed version of the primary screening data is available as
+R-object \Robject{featuresPerWell} from the package and can be loaded
+by \Robject{data("featuresPerWell", package="HD2013SGI")}. 

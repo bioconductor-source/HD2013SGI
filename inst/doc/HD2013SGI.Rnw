@@ -54,16 +54,17 @@ biocLite("HD2013SGI")
 
 \input{sec02_dataAccess.tex}
 \input{sec03_figures.tex}
-\input{sec04_convertData.tex}
-\input{sec05_rawDataProcessing.tex}
-\input{sec06_exampleInteractions.tex}
-\input{sec07_siRNAcorrelation.tex}
-\input{sec08_heatmaps.tex}
-\input{sec09_smallCellNumber.tex}
-\input{sec10_distributionOfInteractions.tex}
-\input{sec11_scatterplots.tex}
-\input{sec12_screenplots.tex}
-\input{sec13_table.tex}
+\input{sec04_imageProcessing.tex}
+\input{sec05_convertData.tex}
+\input{sec06_rawDataProcessing.tex}
+\input{sec07_exampleInteractions.tex}
+\input{sec08_siRNAcorrelation.tex}
+\input{sec09_heatmaps.tex}
+\input{sec10_smallCellNumber.tex}
+\input{sec11_distributionOfInteractions.tex}
+\input{sec12_scatterplots.tex}
+\input{sec13_screenplots.tex}
+\input{sec14_table.tex}
 
 <<moreSourceFiles, echo=FALSE,eval=FALSE>>=
 # the source files for single sections are in the folder:
