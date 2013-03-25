@@ -6,6 +6,7 @@
 The library \Rpackage{HD2013SGI} is loaded. 
 <<imageProcessing1>>=
 library(HD2013SGI)
+dir.create(file.path("result","Figures"),recursive=TRUE,showWarnings=FALSE)
 @
 
 We adapted image segmentation and feature extraction methods from previous
