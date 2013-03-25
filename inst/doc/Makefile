@@ -41,6 +41,8 @@ texclean:
 	rm -f *.log
 	rm -f *.out
 	rm -f *.toc
+	rm -f *.bbl
+	rm -f *.blg
 
 pdfclean:
 	make clean
