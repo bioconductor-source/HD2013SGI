@@ -8,9 +8,9 @@ NCOL = 23
 NFIELD = 4
 @ 
 
-The library \Rpackage{HD2013SGI} is loaded. 
+The package \Rpackage{HD2013SGI} is loaded. 
 <<convertData2>>=
-library(HD2013SGI)
+library("HD2013SGI")
 @
 
 Load screening data in workspace.

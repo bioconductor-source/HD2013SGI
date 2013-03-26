@@ -3,7 +3,7 @@
 \subsection{Preliminaries}
 
 <<exampleSingleKnockDownEffects1>>=
-library(HD2013SGI)
+library("HD2013SGI")
 
 data("Interactions",package="HD2013SGI")
 data("mainEffects",package="HD2013SGI")

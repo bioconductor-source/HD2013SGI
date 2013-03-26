@@ -2,9 +2,9 @@
 \section{Processing of the main data set}
 \subsection{Preliminaries}
 
-The library \Rpackage{HD2013SGI} is loaded. 
+The package \Rpackage{HD2013SGI} is loaded. 
 <<RawDataProcessing1>>=
-library(HD2013SGI)
+library("HD2013SGI")
 @
 
 Load data and screen annotation in workspace.

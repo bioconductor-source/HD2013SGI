@@ -3,16 +3,16 @@
 
 \subsection{Preliminaries}
 
-The library \Rpackage{HD2013SGI} is loaded. 
+The package \Rpackage{HD2013SGI} is loaded. 
 <<imageProcessing1>>=
-library(HD2013SGI)
+library("HD2013SGI")
 dir.create(file.path("result","Figures"),recursive=TRUE,showWarnings=FALSE)
 @
 
 We adapted image segmentation and feature extraction methods from previous
 work\cite{carpenter2006cellprofiler,fuchs2010clustering,held2010cellcognition},
 using the R package EBImage\cite{pau2010ebimage}. The data set comprised
-5.6 terabytes. Examplary we show the image segmentation and feature extraction 
+5.6 terabytes. Here, exemplarily we show the image segmentation and feature extraction 
 on a clipped imaged of size 340 pixels $\times$ 490 pixels.
 
 \subsection{Image segmentation}

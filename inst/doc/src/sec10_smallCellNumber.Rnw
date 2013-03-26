@@ -3,7 +3,7 @@
 \subsection{Preliminaries}
 
 <<smallCellNumber1>>=
-library(HD2013SGI)
+library("HD2013SGI")
 
 dir.create(file.path("result","Figures"),recursive=TRUE,showWarnings=FALSE)
 

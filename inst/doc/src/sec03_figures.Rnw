@@ -1,7 +1,7 @@
 
 \section{Figures from the paper}\label{Figures}
 In this section all figures from the original publication are shown. In the next
-sections the R-code for the analysis is documented. A link to the respective 
+sections the R code for the analysis is documented. A link to the respective 
 section in which the figure is generated is given for each figure.
 
 \begingroup
@@ -9,7 +9,7 @@ section in which the figure is generated is given for each figure.
 
 \begin{minipage}[t]{0.5\textwidth}
   \subsection*{Figure 1cd}
-  R code for this figure is documented in Section \ref{exampleSingleKDPhenotypes}.
+  R code for this figure is documented in Section~\ref{exampleSingleKDPhenotypes}.
   \begin{center}
     \includegraphics[width=0.4\textwidth]{result/Figures/singleKnockDown-SETD8.pdf}
     \includegraphics[width=0.4\textwidth]{result/Figures/singleKnockDown-TCF20.pdf}
@@ -17,7 +17,7 @@ section in which the figure is generated is given for each figure.
 \end{minipage}
 \begin{minipage}[t]{0.5\textwidth}
   \subsection*{Figure 2a}
-  R code for this figure is documented in Section \ref{QControlFeatures}.
+  R code for this figure is documented in Section~\ref{QControlFeatures}.
   \begin{center}
     \includegraphics[width=0.7\textwidth]{result/Figures/QCscatterFeaturesBetweenReplicates.pdf}
   \end{center}
@@ -25,7 +25,7 @@ section in which the figure is generated is given for each figure.
 
 \begin{minipage}[t]{0.33\textwidth}
   \subsection*{Figure 2bd}
-  R code in sections \ref{QControlFeatures} and \ref{QControlGenes}.
+  R code in Section~\ref{QControlFeatures} and \ref{QControlGenes}.
   \begin{center}
     \includegraphics[width=0.7\textwidth]{result/Figures/QCreproducibilityOfFeatures.pdf}
     \includegraphics[width=0.7\textwidth]{result/Figures/QCreproducibilityOfTargetsiRNA.pdf}
