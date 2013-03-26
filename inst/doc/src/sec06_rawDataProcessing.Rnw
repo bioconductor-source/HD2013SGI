@@ -441,7 +441,7 @@ save(datamatrix, file=file.path("result","data","datamatrix.rda"))
 @
 
 \subsection{Pairwise interaction scores}
-Pairwise interaction scores ($\pi$=scores) are estimated using a
+Pairwise interaction scores ($\pi$-scores) are estimated using a
 robust linear fit. The query main effects are lifted such that they
 equal to the mean of the single knock down measurements of the query
 genes (target siRNA is a scrambled sequence serving as negative

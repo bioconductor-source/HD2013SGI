@@ -257,7 +257,7 @@ dimnames(Dsub2) = dimnames(D)
 After selecting \Sexpr{sum(Sel)} features, the dimension of the data cube is now: \Sexpr{paste(dim(D),collapse=" x ")}  (targets x siRNA designs x queries x designs x features x replicates).
 
 \subsection{Pairwise interaction scores}
-Pairwise interaction scores ($\pi$=scores) are estimated using a robust linear fit. The query main effects are lifted such that they equal to the mean of the single knock down measurements of the query genes (target siRNA is a scrambled sequence serving as negative control).
+Pairwise interaction scores ($\pi$-scores) are estimated using a robust linear fit. The query main effects are lifted such that they equal to the mean of the single knock down measurements of the query genes (target siRNA is a scrambled sequence serving as negative control).
 <<SCNpairwiseInteractionScores1>>=
 getInteractions <- function(D) {
   pimatrix = datamatrix
