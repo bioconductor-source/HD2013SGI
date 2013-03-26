@@ -1,5 +1,5 @@
 
-\section{Figures in paper}\label{Figures}
+\section{Figures from the paper}\label{Figures}
 In this section all figures from the original publication are shown. In the next
 sections the R-code for the analysis is documented. A link to the respective 
 section in which the figure is generated is given for each figure.

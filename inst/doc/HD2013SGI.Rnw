@@ -27,8 +27,9 @@ Huber, and Michael Boutros (2013)}}
 \tableofcontents
 
 \section{Introduction}
-This package contains the data and R-code for statistical analysis for
-the paper \\\\
+This document is associated with the R package \Rpackage{HD2013SGI},
+which contains the data and the R code for the statistical analysis
+presented in the paper \\\\
 \begin{center}
 \begin{minipage}[t]{0.8\textwidth}
   Christina Laufer, Bernd Fischer, Maximilian Billman, Wolfgang

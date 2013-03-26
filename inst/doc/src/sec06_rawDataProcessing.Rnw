@@ -1,5 +1,5 @@
 
-\section{Processing of main SGI data}
+\section{Processing of the main data set}
 \subsection{Preliminaries}
 
 The library \Rpackage{HD2013SGI} is loaded. 
