@@ -10,7 +10,7 @@ data("Interactions", package="HD2013SGI")
 
 The element \Robject{Interactions\$piscore} of this data object is a 6-dimensional array of
 $\pi$-scores, \Robject{Interactions\$padj} is a 5-dimensional
-array of BH-adjusted p-values and \Robject{Interactions\$Anno}
+array of BH-adjusted p-values, and \Robject{Interactions\$Anno}
 contains annotation for target genes, query genes, and phenotypes.
 You can type
 <<dataAccess2,eval=FALSE>>=

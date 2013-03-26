@@ -36,16 +36,17 @@ presented in the paper \\\\
 Huber, and Michael Boutros (2013):{\it Mapping genetic interactions in human cancer cells with RNAi}. \\\\
 \end{minipage}
 \end{center}
-In Section~\ref{dataAccess}, the
-access to the data is described. Section ~\ref{Figures} shows the
-figures from the original publication and links to subsequent
-sections describing the related analyses and R code. The subsequent sections describe the
-statistical analyses in the order in which they were executed. The R code
-within each section can be executed independently of the other sections.
-Intermediate results from each section are available in the form of R data objects.
 
-To install the package, please install a current version of
-R and then install the \Rpackage{HD2013SGI} package by typing
+In Section~\ref{dataAccess}, the access to the data is
+described. Section ~\ref{Figures} shows the figures from the original
+publication and links each figure to one of the subsequent sections,
+which describe the statistical analyses in the order in which they
+were executed. The R code within each section can be executed
+independently of the other sections.  Intermediate results from each
+section are available in the form of R data objects.
+
+To install the package \Rpackage{HD2013SGI}, please start a current version of
+R and type
 <<installation,eval=FALSE>>=
 source("http://bioconductor.org/biocLite.R")
 biocLite("HD2013SGI")
