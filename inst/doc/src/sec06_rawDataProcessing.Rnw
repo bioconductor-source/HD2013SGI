@@ -341,16 +341,16 @@ features $f$ a linear regression is fitted on the previously selected features.
 \begin{equation}
   D_{\cdot\,-\,\cdot\,-\,f\,\cdot} \sim D_{\cdot\,-\,\cdot\,-\,F(i-1)\,\cdot}
 \end{equation}
-Let $r_{\cdots\,\cdots\,f\,\cdots}$ be the residuals of this fit. The
+Let $r_{\cdot\,\cdot\,f\,\cdot}$ be the residuals of this fit. The
 residuals are a composition of random noise and biological information
 that is non-redundant to the previously selected features. To estimate if there still exists unexplained biological signal, the
-Pearson correlation coefficient $\bar{\rho}_f$  of the residual
-vectors $r_{\cdots\,\cdots\,f\,1}$ and $r_{\cdots\,\cdots\,f\,2}$
+Pearson correlation coefficient $\bar{\rho}_{f}$  of the residual
+vectors $r_{\cdot\,\cdot\,f\,1}$ and $r_{\cdot\,\cdot\,f\,2}$
 between the two biological replicates is computed. It can be seen as a
 proxy for the signal-to-noise ratio of these residuals.  
 
-The feature with the largest
-correlation coefficient $\bar{\rho}_f$ is selected.
+The feature with the largest correlation coefficient 
+$\bar{\rho}$ is selected.
 <<featureSelection3>>=
 stabilitySelection = HD2013SGIselectByStability(subSampleForStabilitySelection,
                                        preselect = c("count"),
@@ -359,8 +359,12 @@ stabilitySelection = HD2013SGIselectByStability(subSampleForStabilitySelection,
 
 The step-wise approach is stopped, when the number of positive
 correlation coefficients is smaller or equal to the number of negative
-correlation coefficients ($\sum_f(sign(\bar{\rho}_f)>0) <
-\sum_f(sign(\bar{\rho}_f)<0)$). This criterion is motivated by the
+correlation coefficients
+\begin{equation}
+  \sum_f\left(\Theta\left(\bar{\rho}_f\right)\right) \leq
+  \sum_f\left(\Theta\left(-\bar{\rho}_f\right)\right)\,,
+\end{equation}
+where $\Theta\left(x\right)$ is the Heaviside function. This criterion is motivated by the
 observation that for random data, half of the correlation coefficients
 is expected to be positive and the other half is expected to be
 negative. 
