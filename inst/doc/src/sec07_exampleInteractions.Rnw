@@ -14,17 +14,17 @@ dir.create(file.path("result","Figures"),
 
 \subsection{Examples of single knock down phenotypes}\label{exampleSingleKDPhenotypes}
 
-Main effects are first summarized over all four siRNA design pairs and
-divided by the median deviation to compute a z-score. Bars show the
+Main effects were first summarized over all four siRNA design pairs and
+divided by the median deviation to compute a $z$-score. Bars in the following barplots show the
 mean of main effects calculated over the two replicates of the
 screen. Circle symbols represent individual replicate
 measurements. Main effects for five different phenotypes are plotted
 for the two genes SETD8 and TCF20.
-
+%
 <<exampleSingleKnockDownEffects2,results=hide>>=
 features = c("count", "nuc.0.s.area","nuc.0.m.eccentricity",
              "cell.Bact.m.eccentricity","cell.act.m.majoraxis")
-ylim = c(-2.947124,7.329518)
+ylim = c(-2.947124, 7.329518)
 @
 <<exampleSingleKnockDownEffects3,echo=FALSE,results=hide>>=
 pdf(file=file.path("result","Figures","singleKnockDown-SETD8.pdf"),
@@ -79,13 +79,13 @@ dev.off()
 \subsection{Overlap of interactions}\label{OverlapOfInteractions}
 
 To show the overlap of interactions called in different phenotypes,
-Interactions with an adjusted p-value of 0.01 are considered. 
+interactions with an adjusted $p$-value of $\le0.01$ were considered.
 <<overlapOfInteractions1>>=
 features = c("nuc.0.s.area","nuc.0.m.majoraxis",
              "cell.Bact.m.eccentricity","cell.act.m.majoraxis")
 SIG = Interactions$padj[,,,,features] <= 0.01
 SIG[is.na(SIG)] = FALSE
-@ 
+@
 The 5-dimensional array of boolean values indicating the significant
 interactions is reshaped to a 2-dimensional table with one column for
 each feature.
@@ -112,7 +112,7 @@ for (i in seq_along(L)) {
   writeLines(L[[i]],file.path("result","Figures",
                               sprintf("interactionlist%d.txt",i)))
 }
-@ 
+@
 
 In the original paper a Venn diagram is shown. An alternative plot
 where the region areas are proportional to the numbers, is a mosaic
@@ -122,7 +122,7 @@ pdf(file.path("result","Figures","Mosaicplot.pdf"))
 @
 <<overlapOfInteractions6,echo=FALSE,results=hide>>=
 mosaic(Overlap, shade = TRUE)
-@ 
+@
 <<overlapOfInteractions7,results=hide>>=
 dev.off()
 @

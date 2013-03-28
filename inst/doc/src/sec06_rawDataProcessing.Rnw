@@ -1,8 +1,9 @@
-
+%------------------------------------------------------------
 \section{Processing of the main data set}
 \subsection{Preliminaries}
+%------------------------------------------------------------
 
-The package \Rpackage{HD2013SGI} is loaded. 
+Load the package \Rpackage{HD2013SGI}.
 <<RawDataProcessing1>>=
 library("HD2013SGI")
 @
@@ -15,7 +16,7 @@ data("TargetAnnotation",package="HD2013SGI")
 data("QueryAnnotation",package="HD2013SGI")
 @
 
-Output directory are created where the data, figures, and tables will be placed in.
+Output directories are created where the data, figures and tables will be placed in.
 <<RawDataProcessing3>>=
 dir.create(file.path("result","data"),recursive=TRUE,showWarnings=FALSE)
 dir.create(file.path("result","Figures"),recursive=TRUE,showWarnings=FALSE)
@@ -75,7 +76,7 @@ matplot(px, sapply(trsf, do.call, list(px)), type="l", lty=c(2,1), col=colores,
         lwd=2.5, ylab="f(x)", xlab="x")
 legend("bottomright", fill=colores, legend=names(trsf))
 dev.off()
-@ 
+@
 \begin{center}
   \includegraphics[width=0.5\textwidth]{result/Figures/supplementaryInformation-glog.pdf}
 \end{center}
@@ -89,11 +90,11 @@ for (i in seq_len(dim(D)[5])) {
 @
 
 After transformation, to take account of the plate and batch effects
-and differences in efficiency of the siRNA transfection, and additive
+and differences in efficiency of the siRNA transfection, an additive
 normalization is performed per plate. The plate median is set to be
 equal for all siRNA designs and replicates for each query gene and
 phenotypic feature. This compensates for global differences between
-replicates and siRNA designs. 
+replicates and siRNA designs.
 <<TransformationAndNormalization3>>=
 M = apply(D,c(2:6),median,na.rm=TRUE)
 M2 = apply(M, c(2,4), mean)
@@ -109,10 +110,10 @@ D = D - M
 After transformation, to take account of the fact that the data range
 of the different features was different, data were centered and scaled
 separately for each feature. Center and scale were computed as the
-median and median absolute deviation, respectively. 
+median and median absolute deviation, respectively.
 <<TransformationAndNormalization4>>=
 for (i in seq_len(dim(D)[5])) {
-  D[,,,,i,] = (D[,,,,i,] - median(D[,,,,i,],na.rm=TRUE)) / 
+  D[,,,,i,] = (D[,,,,i,] - median(D[,,,,i,],na.rm=TRUE)) /
                 mad(D[,,,,i,],na.rm=TRUE)
 }
 @
@@ -141,8 +142,8 @@ we computed the two vectors $\mathbf{v}_{f}^{1}$ and  $\mathbf{v}_{f}^{2}$,
 \end{equation}
 Here, the notation $-$ indicates averaging over an index, and the notation
 $\cdot$ indicates extraction of the whole subspace spanned by this
-index. Actually, we used only the \Sexpr{length(IndexSAMPLE)} sample genes,
-since target genes contain a number of negative and positive controls. Thus,
+index. Here, we used only the \Sexpr{length(IndexSAMPLE)} sample genes,
+since the set of target genes contained a number of negative and positive controls. Thus,
 $\mathbf{v}_{m}^{l}$ is a vector with
 \Sexpr{length(IndexSAMPLE)} $\times$
 \Sexpr{dim(D)[3]} $=$
@@ -156,35 +157,38 @@ for (i in seq_len(dim(D)[5])) {
   C[i] = cor(as.vector(D2[IndexSAMPLE,,i,1]),as.vector(D2[IndexSAMPLE,,i,2]))
 }
 @
-
+%
 We plot the correlation coefficients for all \Sexpr{length(C)} features.
 <<qualityControlFeatures2,echo=FALSE,results=hide>>=
 pdf(file=file.path("result","Figures","QCreproducibilityOfFeatures.pdf"))
-@ 
+@
 <<qualityControlFeatures2,results=hide>>=
-plot(-sort(-C),pch=20,xlab="features",ylab="correlation",ylim=c(0,1),
-     cex.lab=1.75,cex.axis=1.5)
+plot(sort(C, decreasing=TRUE), pch=20, xlab="features", ylab="correlation", ylim=c(0,1),
+     cex.lab=1.75, cex.axis=1.5)
 abline(h=0.6)
-@ 
+@
 <<qualityControlFeatures2,echo=FALSE,results=hide>>=
 dev.off()
 @
 \begin{center}
 \includegraphics[width=0.5\textwidth]{result/Figures/QCreproducibilityOfFeatures.pdf}
 \end{center}
-
-As an example the scatter plot of eccentricity measurements is plotted for two replicates.
+%
+As an example, the scatter plot of eccentricity measurements is plotted for two replicates.
 <<qualityControlFeatures3,echo=FALSE,results=hide>>=
 pdf(file=file.path("result","Figures","QCscatterFeaturesBetweenReplicates.pdf"))
-@ 
+@
 <<qualityControlFeatures3,results=hide>>=
 i = "cell.Bact.m.eccentricity"
-plot(as.vector(D2[IndexSAMPLE,,i,1]),as.vector(D2[IndexSAMPLE,,i,2]),
-     pch=20,xlab="eccentricity replicate 1",cex.lab=1.75,cex.axis=1.5,
+plot(as.vector(D2[IndexSAMPLE,,i,1]),
+     as.vector(D2[IndexSAMPLE,,i,2]),
+     pch=20, cex.lab=1.75, cex.axis=1.5,
+     xlab="eccentricity replicate 1",
      ylab="eccentricity replicate 2")
-cc = cor(as.vector(D2[IndexSAMPLE,,i,1]),as.vector(D2[IndexSAMPLE,,i,2]))
-text(x=2,y=-4,sprintf("cor = %0.2f",cc),cex=1.75)
-@ 
+cc = cor(as.vector(D2[IndexSAMPLE,,i,1]),
+         as.vector(D2[IndexSAMPLE,,i,2]))
+text(x=2, y=-4, sprintf("cor = %0.2f",cc), cex=1.75)
+@
 <<qualityControlFeatures3,echo=FALSE,results=hide>>=
 dev.off()
 @
@@ -204,8 +208,9 @@ features passed quality control.
 <<qualityControlFeatures5>>=
 I = which(C >= 0.6)
 D = D[,,,,I,,drop=FALSE]
+dim(D)
 @
-
+%
 The dimension of the data cube after quality control of the phenotypic features is\\
 \begin{center}
 \begin{tabular}{lrrl}
@@ -217,7 +222,7 @@ $\times$ & \Sexpr{dim(D)[5]} & phenotypic features\\
 $\times$ & \Sexpr{dim(D)[6]} & biological replicates
 \end{tabular}
 \end{center}
- 
+
 \subsection{Quality control of siRNA designs}\label{QControlGenes}
 To detect cases where the siRNA reagents for our target genes had
 off-target effects, we compared the phenotypic profiles of the two
@@ -229,7 +234,7 @@ vectors
 using only those features that passed the quality filter described in
 Section~\ref{QControlFeatures}. We then computed the correlation
 $\tilde{\rho'}_{if}$ between $\mathbf{w}_{if}^{1}$ and
-$\mathbf{w}_{if}^{2}$. The concruence score 
+$\mathbf{w}_{if}^{2}$. The congruence score
 \begin{equation}
   \tilde{\rho}_{i}=\tilde{\rho'}_{i\,-}
 \end{equation}
@@ -254,10 +259,11 @@ Cdesign1all = Cdesign1all / dim(D)[5]
 The congruence scores for all target genes are plotted in decreasing order.
 <<qualityControlsiRNA3,echo=FALSE,results=hide>>=
 pdf(file.path("result","Figures","QCreproducibilityOfTargetsiRNA.pdf"))
-@ 
+@
 <<qualityControlsiRNA3,results=hide>>=
-plot(-sort(-Cdesign1all[IndexSAMPLE]), pch=20,cex.lab=1.75,cex.axis=1.5,
-     xlab="target genes",ylab="correlation",ylim=c(0,1))
+plot(sort(Cdesign1all[IndexSAMPLE], decreasing=TRUE),
+     pch=20, cex.lab=1.75, cex.axis=1.5, ylim=c(0,1),
+     xlab="target genes",ylab="correlation")
 abline(h=0.7)
 @
 <<qualityControlsiRNA3,echo=FALSE,results=hide>>=
@@ -267,14 +273,14 @@ dev.off()
 \includegraphics[width=0.5\textwidth]{result/Figures/QCreproducibilityOfTargetsiRNA.pdf}
 \end{center}
 
-CHAF1A is an example gene with a low congruence score. Examplary a
+CHAF1A is an example gene with a low congruence score. Exemplarily a
 barchart for the cell eccentricity for the double knock-downs of
-both siRNA designs of CHAF1A and siRNA design 1 of DPF2 is plotted.
+both siRNA designs of CHAF1A together with siRNA design 1 of DPF2 is plotted.
 
 <<qualityControlsiRNA4,echo=FALSE,results=hide>>=
 pdf(file.path("result","Figures","QCreproducibilityOfTargetsiRNAexample.pdf"),width=2,height=4)
 par(xpd=NA,mar=c(6, 4, 2, 2) + 0.1)
-@ 
+@
 <<qualityControlsiRNA4,results=hide>>=
 f = "cell.Bact.m.eccentricity"
 D1 = D[ TargetAnnotation$Symbol == "CHAF1A",,QueryAnnotation$Symbol == "DPF2",1,f,]
@@ -282,7 +288,7 @@ bp = barplot(apply(D1,1,mean),ylab="Cell eccentricity",
         names.arg=c("CHAF1A #1\nDPF2 #1","CHAF1A #2\nDPF2 #1"),las=2)
 points(bp,D1[,1])
 points(bp,D1[,2])
-@ 
+@
 <<qualityControlsiRNA4,echo=FALSE,results=hide>>=
 dev.off()
 @
@@ -292,17 +298,19 @@ dev.off()
 
 Target gene $i$ was selected for subsequent analysis if
 $\tilde{\rho}_i\ge0.7$. The number of target genes passing quality
-control is \Sexpr{sum(Cdesign1all[IndexSAMPLE] >= 0.7,na.rm=TRUE)} out
+control was \Sexpr{sum(Cdesign1all[IndexSAMPLE] >= 0.7,na.rm=TRUE)} out
 of \Sexpr{length(IndexSAMPLE)}. Additionally, \Sexpr{length(IndexNEG)}
-negative control target siRNAs selected. 
+negative control target siRNAs were selected.
 
 <<qualityControlsiRNA4>>=
 I = IndexSAMPLE[Cdesign1all[IndexSAMPLE] >= 0.7]
 I = c(I, IndexNEG)
 D = D[I,,,,,,drop=FALSE]
 TargetAnnotation = TargetAnnotation[I,]
+dim(D)
 @
-The dimension of the data cube quality control of the siRNA designs is\\
+%
+The dimension of the data cube \Robject{D} after quality control of the siRNA designs is
 \begin{center}
 \begin{tabular}{lrrl}
 & \Sexpr{dim(D)[1]} & target genes \\
@@ -314,14 +322,20 @@ $\times$ & \Sexpr{dim(D)[6]} & biological replicates
 \end{tabular}
 \end{center}
 
+%------------------------------------------------------------
 \subsection{Selection of non-redundant features}\label{featureSelection}
-The \Sexpr{dim(D)[5]} features are highly redundant. We select a set of non-redundant features. The phenotypic profiles are summarized over all siRNA designs and control measurements are excluded for feature selection.
+%------------------------------------------------------------
+The \Sexpr{dim(D)[5]} features are highly redundant. We selected a set of non-redundant
+features. To do so, in the following the phenotypic profiles are summarized over all siRNA designs, and control
+measurements are excluded.
+%
 <<featureSelection1>>=
 D1 = (D[,1,,1,,] + D[,1,,2,,] + D[,2,,1,,] + D[,2,,2,,]) / 4
 D1 = D1[TargetAnnotation$group == "sample",,,]
 @
-
+%
 3000 perturbations are randomly selected to speed up the selection process.
+%
 <<featureSelection2>>=
 dim(D1) = c(prod(dim(D1)[1:2]),dim(D1)[3:4])
 D1 = aperm(D1,c(1,3,2))
@@ -331,35 +345,36 @@ subSampleForStabilitySelection = list(D = D1[Sample,,],
                                       Sample = Sample,
                                       phenotype = dimnames(D)[[5]])
 @
-
-Non-redundant features are selected. The number-of-cells is manually
-preselected because of its biological interest. All other features are
-selected automatically in a sequential way. In each step all candidate
-features are evaluated separately. Let $F(i)$ be the features that were
-selected after step $i$. In the each step ($i$) for all candidate
-features $f$ a linear regression is fitted on the previously selected features.
+%
+Next, the feature selection was performed. The feature \emph{number of cells} was manually
+preselected because of its biological interest. All other features were
+selected automatically in a sequential way. In each step, all remaining candidate
+features were evaluated separately. Let $F(i)$ be the features that were
+selected after step $i$. In step $i$, for all candidate
+features $f$ a linear regression was fit on the previously selected features.
 \begin{equation}
   D_{\cdot\,-\,\cdot\,-\,f\,\cdot} \sim D_{\cdot\,-\,\cdot\,-\,F(i-1)\,\cdot}
 \end{equation}
-Let $r_{\cdot\,\cdot\,f\,\cdot}$ be the residuals of this fit. The
-residuals are a composition of random noise and biological information
+Let $r_{\cdot\,\cdot\,f\,\cdot}$ be the residuals of this fit, i.\,e., the component of
+$D_{\cdot\,-\,\cdot\,-\,f\,\cdot}$ that is orthogonal to the linear subspace spanned by $D_{\cdot\,-\,\cdot\,-\,F(i-1)\,\cdot}$.
+The residuals are a composition of random noise and biological information
 that is non-redundant to the previously selected features. To estimate if there still exists unexplained biological signal, the
 Pearson correlation coefficient $\bar{\rho}_{f}$  of the residual
 vectors $r_{\cdot\,\cdot\,f\,1}$ and $r_{\cdot\,\cdot\,f\,2}$
-between the two biological replicates is computed. It can be seen as a
-proxy for the signal-to-noise ratio of these residuals.  
-
-The feature with the largest correlation coefficient 
-$\bar{\rho}$ is selected.
+between the two biological replicates was computed. It can be considered a
+proxy for the signal-to-noise ratio of these residuals.
+The feature with the largest correlation coefficient
+$\bar{\rho}$ was selected.
+%
 <<featureSelection3>>=
 stabilitySelection = HD2013SGIselectByStability(subSampleForStabilitySelection,
                                        preselect = c("count"),
                                        Rdim = 25, verbose = TRUE)
 @
 
-The step-wise approach is stopped, when the number of positive
-correlation coefficients is smaller or equal to the number of negative
-correlation coefficients
+The step-wise approach was stopped when the number of positive
+correlation coefficients was smaller than or equal to the number of negative
+correlation coefficients,
 \begin{equation}
   \sum_f\left(\Theta\left(\bar{\rho}_f\right)\right) \leq
   \sum_f\left(\Theta\left(-\bar{\rho}_f\right)\right)\,,
@@ -367,50 +382,53 @@ correlation coefficients
 where $\Theta\left(x\right)$ is the Heaviside function. This criterion is motivated by the
 observation that for random data, half of the correlation coefficients
 is expected to be positive and the other half is expected to be
-negative. 
+negative.
 <<featureSelection4>>=
-Sel = stabilitySelection$ratioPositive >= 0.5
+Sel = (stabilitySelection$ratioPositive >= 0.5)
+sum(Sel)
 @
-
-A set of \Sexpr{sum(Sel)} features is shown to contain non-redundant
-information. At first we plot the correlation coefficients of the
-residual features which is considered to be the information content. 
+%
+Thus, a set of \Sexpr{sum(Sel)} features was considered to contain non-redundant
+information. The barplot below shows the correlation coefficients of the
+residual features, which was considered the proxy for information content.
+%
 <<featureSelection5,echo=FALSE,results=hide>>=
 col = brewer.pal(3,"Pastel1")[1:2]
 pdf(file.path("result","Figures","FeatureSelectionInformationgain.pdf"))
 par(mar=c(13,4,1,1))
-@ 
+@
 <<featureSelection5,results=hide>>=
-barplot(stabilitySelection$correlation, 
+barplot(stabilitySelection$correlation,
         names.arg=HD2013SGI:::humanReadableNames[stabilitySelection$selected],
         col=ifelse(Sel, col[2], col[1]),
-        ylim=c(0,1),las=2,ylab="information gain")
-@ 
+        ylim=c(0,1), las=2, ylab="information gain")
+@
 <<featureSelection5,echo=FALSE,results=hide>>=
 dev.off()
 @
 \begin{center}
 \includegraphics[width=0.5\textwidth]{result/Figures/FeatureSelectionInformationgain.pdf}
 \end{center}
-
-Now we plot the fraction of positive correlation coefficients that serves as a stop criterion.
+%
+Now we plot the fraction of positive correlation coefficients, which served as a stop criterion.
+%
 <<featureSelection6,echo=FALSE,results=hide>>=
 pdf(file.path("result","Figures","FeatureSelectionRatioPositive.pdf"))
 par(mar=c(13,4,1,1))
-@ 
+@
 <<featureSelection6,results=hide>>=
-barplot(stabilitySelection$ratioPositive-0.5, 
+barplot(stabilitySelection$ratioPositive-0.5,
         names.arg=HD2013SGI:::humanReadableNames[stabilitySelection$selected],
         offset=0.5,col=ifelse(Sel, col[2], col[1]),ylim=c(0,1),
         las=2,ylab="fraction positive correlated")
-@ 
+@
 <<featureSelection6,echo=FALSE,results=hide>>=
 dev.off()
 @
 \begin{center}
 \includegraphics[width=0.5\textwidth]{result/Figures/FeatureSelectionRatioPositive.pdf}
 \end{center}
-
+%
 The criteria for feature selection are saved and the features are selected.
 <<featureSelection7>>=
 save(stabilitySelection, file=file.path("result","data",
@@ -418,8 +436,9 @@ save(stabilitySelection, file=file.path("result","data",
 D = D[,,,,stabilitySelection$selected[Sel],,drop=FALSE]
 dimnames(D)[[1]] = TargetAnnotation$Symbol
 dimnames(D)[[3]] = QueryAnnotation$Symbol
+dim(D)
 @
-
+%
 After selecting \Sexpr{sum(Sel)} non-redundant features, the dimension of the data cube is\\
 \begin{center}
 \begin{tabular}{lrrl}
@@ -431,21 +450,23 @@ $\times$ & \Sexpr{dim(D)[5]} & phenotypic features\\
 $\times$ & \Sexpr{dim(D)[6]} & biological replicates
 \end{tabular}
 \end{center}
-
+%
 The datamatrix is now completely pre-processed and can be saved.
 <<featureSelection8>>=
-datamatrix = list(D=D, Anno = list(target = TargetAnnotation, 
-                                   query = QueryAnnotation, 
+datamatrix = list(D=D, Anno = list(target = TargetAnnotation,
+                                   query = QueryAnnotation,
                                    phenotype=dimnames(D)[[5]]))
 save(datamatrix, file=file.path("result","data","datamatrix.rda"))
 @
 
+%--------------------------------------------------
 \subsection{Pairwise interaction scores}
-Pairwise interaction scores ($\pi$-scores) are estimated using a
+%--------------------------------------------------
+Pairwise interaction scores ($\pi$-scores) were estimated using a
 robust linear fit. The query main effects are lifted such that they
 equal to the mean of the single knock down measurements of the query
 genes (target siRNA is a scrambled sequence serving as negative
-control).  
+control).
 <<pairwiseInteractionScores1>>=
 D = datamatrix$D
 pimatrix = datamatrix
@@ -472,11 +493,14 @@ for (i in seq_len(dim(D)[2])) {
 save(mainEffects, file=file.path("result","data","mainEffects.rda"))
 @
 
+%--------------------------------------------------
 \subsection{Statistical testing of interaction terms}
-For statistical testing the interaction terms that differ by 4 times
-the median deviation of the interaction scores are flagged as
-outliers. Afterwards the interaction terms are tested for significance
-by a moderated t-test implemented in the R-package limma. 
+%--------------------------------------------------
+For statistical testing, the interaction terms that differed by $\ge4$ times
+the median standard deviation of the interaction scores were flagged as
+outliers. Afterwards the interaction terms were tested for significance
+by a moderated $t$-test implemented in the R package \Rpackage{limma}.
+%
 <<callingInteractions1>>=
 D = pimatrix$D
 PADJ = D[pimatrix$Anno$target$group == "sample",,,,,1]
@@ -494,14 +518,16 @@ for (i in seq_len(dim(D)[5])) {
   fit = eBayes(lmFit(Data[K,]))
   padj[K] = p.adjust(fit$p.value, method="BH")
   PADJ[,,,,i] = padj
-  cat("i=",i," nr int (1%) = ",sum(padj <= 0.01,na.rm=TRUE)/nrow(Data),
-      " nr int (3%) = ",sum(padj <= 0.03,na.rm=TRUE)/nrow(Data),"\n")
+  cat(sprintf("i=%2d",i),
+      " nr int (1%) = ", sum(padj <= 0.01, na.rm=TRUE)/nrow(Data),
+      " nr int (3%) = ", sum(padj <= 0.03, na.rm=TRUE)/nrow(Data), "\n")
 }
 @
-
-$\pi$-scores for each siRNA pair are summarized over both
-replicates. Furthermore interaction scores are divided by their median
-deviation over all siRNA pairs, to provide comparable measurements. 
+%
+$\pi$-scores for each siRNA pair were summarized over both
+replicates. Furthermore, interaction scores were divided by their median
+deviation over all siRNA pairs, to scale them to comparable dynamic range.
+%
 <<callingInteractions2>>=
 PI = pimatrix$D
 PI = PI[pimatrix$Anno$target$group == "sample",,,,,]
@@ -511,7 +537,6 @@ Interactions = list(newpiscore = PI,
                     Anno = pimatrix$Anno)
 Interactions$Anno$target = Interactions$Anno$target[
             pimatrix$Anno$target$group == "sample",]
-
 save(Interactions, file=file.path("result","data","Interactions.rda"))
 @
 
