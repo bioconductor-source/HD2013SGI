@@ -1,5 +1,5 @@
 %------------------------------------------------------------
-\section{Processing of the main data set}
+\section{Processing of the main data set}\label{sec:main}
 \subsection{Preliminaries}
 %------------------------------------------------------------
 

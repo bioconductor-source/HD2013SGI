@@ -76,56 +76,63 @@ dev.off()
 \includegraphics[width=0.3\textwidth]{result/Figures/interaction-SIN3A-RUVBL1.pdf}
 \end{center}
 
+%-------------------------------------------------------------
 \subsection{Overlap of interactions}\label{OverlapOfInteractions}
-
+%-------------------------------------------------------------
 To show the overlap of interactions called in different phenotypes,
 interactions with an adjusted $p$-value of $\le0.01$ were considered.
+%
 <<overlapOfInteractions1>>=
 features = c("nuc.0.s.area","nuc.0.m.majoraxis",
              "cell.Bact.m.eccentricity","cell.act.m.majoraxis")
 SIG = Interactions$padj[,,,,features] <= 0.01
 SIG[is.na(SIG)] = FALSE
 @
-The 5-dimensional array of boolean values indicating the significant
-interactions is reshaped to a 2-dimensional table with one column for
+The \Sexpr{length(dim(SIG))}-dimensional array \Robject{SIG} of Boolean values indicating the significant
+interactions was reshaped to a 2-dimensional table with one column for
 each feature.
 <<overlapOfInteractions2>>=
-dim(SIG) = c(prod(dim(SIG)[1:4]),dim(SIG)[5])
+dim(SIG) = c(prod(dim(SIG)[1:4]), dim(SIG)[5])
 row.names(SIG) = sprintf("A%d",seq_len(nrow(SIG)))
 colnames(SIG) = HD2013SGI:::humanReadableNames[features]
 @
-A contingency table is computed considering all gene pairs that interact in
+%
+A contingency table was computed considering all gene pairs that interacted in
 at leat one phenotype.
+%
 <<overlapOfInteractions3>>=
-I = which(apply(SIG,1,any))
+I = which(apply(SIG, 1, any))
 Overlap = table(as.data.frame(SIG[I,]))
-print(Overlap)
+Overlap
 save(Overlap, file=file.path("result","Figures","Overlap.rda"))
 @
-
-A Venn diagram can be generated with a webtool
-(e.g. http://bioinfogp.cnb.csic.es/tools/venny/index.html). Lists of
-identifiers of the significant genes are written be be used with the webtools.
+%
+A Venn diagram was generated with a webtool
+(http://bioinfogp.cnb.csic.es/tools/venny/index.html). Lists of
+identifiers of the significant genes were written to be used with the webtool.
+%
 <<overlapOfInteractions4,eval=FALSE>>=
-L = apply(SIG,2,function(x) names(which(x)))
+L = apply(SIG, 2, function(x) names(which(x)))
 for (i in seq_along(L)) {
-  writeLines(L[[i]],file.path("result","Figures",
-                              sprintf("interactionlist%d.txt",i)))
+  writeLines(L[[i]],
+    file.path("result", "Figures", sprintf("interactionlist%d.txt",i)))
 }
 @
-
-In the original paper a Venn diagram is shown. An alternative plot
+%
+In paper, a Venn diagram is shown. An alternative plot
 where the region areas are proportional to the numbers, is a mosaic
 plot as shown here.
+%
 <<overlapOfInteractions5,echo=FALSE,results=hide>>=
 pdf(file.path("result","Figures","Mosaicplot.pdf"))
 @
 <<overlapOfInteractions6,echo=FALSE,results=hide>>=
 mosaic(Overlap, shade = TRUE)
 @
-<<overlapOfInteractions7,results=hide>>=
+<<overlapOfInteractions7,echo=FALSE,results=hide>>=
 dev.off()
 @
+%
 \begin{center}
   \includegraphics[width=0.7\textwidth]{result/Figures/Mosaicplot.pdf}
 \end{center}

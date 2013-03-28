@@ -1,5 +1,5 @@
 
-\section{Convert data from plate order to multi-dimensional SGI-arrary}
+\section{Convert data from plate order to multi-dimensional SGI-arrary}\label{sec:convert}
 
 \subsection{Preliminaries}
 

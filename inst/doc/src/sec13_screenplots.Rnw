@@ -13,8 +13,9 @@ dir.create(file.path("result","Figures"),
 
 \subsection{Screen plots}
 
-The $\pi$-scores for the feature \Robject{cell.act.m.majoraxis} are
-mapped back to the screen plate layout. 
+The $\pi$-scores for the feature \Robject{cell.act.m.majoraxis} were
+mapped back to the screen plate layout.
+%
 <<screenplots2,results=hide>>=
 F = "cell.act.m.majoraxis"
 EmptyPlate = rep(NA_real_, 24*16)
@@ -26,7 +27,7 @@ for (Rep in seq_len(dim(Interactions$piscore)[6])) {
     for (QD in seq_len(dim(Interactions$piscore)[4])) {
       for (TD in seq_len(dim(Interactions$piscore)[2])) {
         Plate = EmptyPlate
-        Plate[Interactions$Anno$target$Well] = 
+        Plate[Interactions$Anno$target$Well] =
                 Interactions$piscore[,TD,Q,QD,F,Rep]
         z[[sprintf("Q%d_td%d_qd%d_r%d",Q,TD,QD,Rep)]] = Plate
       }
@@ -34,7 +35,7 @@ for (Rep in seq_len(dim(Interactions$piscore)[6])) {
   }
 }
 @
-Screen plots of two plates are plotted. 
+Screen plots of two plates are plotted.
 
 <<screenplots2,echo=FALSE,results=hide>>=
 pdf(file.path("result","Figures","screenPlot.pdf"),width=6,height=2)

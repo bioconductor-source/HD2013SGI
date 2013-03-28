@@ -14,9 +14,10 @@ dir.create(file.path("result","data"), recursive=TRUE)
 
 \subsection{Correlation of interaction profiles for different siRNA designs of the same gene}
 
-$\pi$-scores are summarized over two replicates. Pearson correlation
-coefficients are computed for interaction profiles for each pair of
-siRNA and saved in the matric $C$. 
+$\pi$-scores were summarized over two replicates. Pearson correlation
+coefficients were computed for interaction profiles for each pair of
+siRNA and saved in the matric $C$.
+%
 <<siRNAcorrelation2>>=
 PI = Interactions$piscore
 for (k in seq_len(dim(PI)[5])) {
@@ -28,18 +29,20 @@ PI2 = PI
 dim(PI2) = c(prod(dim(PI)[1:2]),prod(dim(PI)[3:5]))
 C = cor(t(PI2),use="pairwise.complete")
 @
-
-Correlation coefficients for siRNA pairs, where both siRNA target the
-same gene are extracted. 
+%
+Correlation coefficients for siRNA pairs, where both siRNA targeted the
+same gene, were extracted.
+%
 <<siRNAcorrelation3>>=
 IDX = matrix(NA_integer_, nr=dim(Interactions$piscore)[1],nc=2)
 IDX[,1] = seq_len(dim(Interactions$piscore)[1])
 IDX[,2] = IDX[,1] + dim(Interactions$piscore)[1]
 cc = C[IDX]
 @
-
-Next, we count the number of significant interactions per target gene
-to select genes that show a strong interaction profile.  
+%
+Next, we counted the number of significant interactions per target gene
+to select genes that showed a strong interaction profile.
+%
 <<siRNAcorrelation4>>=
 PI3 = PI
 dim(PI3) = c(dim(PI)[1],dim(PI)[2],prod(dim(PI)[3:5]))
@@ -47,16 +50,16 @@ PI3[abs(PI3) < 5] = NA_real_
 S = sign(PI3)
 nrOfInteractionsPerTarget = apply(!is.na(S[,1,] == S[,2,]),1,sum,na.rm=TRUE)
 @
-
+%
 We plot the density of correlation coefficients of interaction
 profiles between siRNAs against different genes and between siRNAs
-targeting the same gene. 
+targeting the same gene.
 <<siRNAcorrelation5,results=hide>>=
 differentGenes = upper.tri(C)
 differentGenes[IDX] = FALSE
 differentGenes[IDX[,2:1]] = FALSE
 sel = which(nrOfInteractionsPerTarget >= 5)
-@ 
+@
 <<siRNAcorrelation6,echo=FALSE,results=hide>>=
 pdf(file.path("result","Figures","multidensityWithinDesignCorrelation.pdf"),
     height=5)
@@ -80,7 +83,7 @@ dev.off()
 
 Save the number of interactions per target gene.
 <<siRNAcorrelation9>>=
-save(nrOfInteractionsPerTarget, 
+save(nrOfInteractionsPerTarget,
      file=file.path("result","data","nrOfInteractionsPerTarget.rda"))
 @
 
