@@ -11,12 +11,12 @@
   \end{minipage}
 }
 
+\newcommand{\thetitle}{Mapping genetic interactions in human cancer cells} % used by whbiocvignette.sty
+
 %\pagestyle{empty}
-\title{\textsf{\textbf{Mapping genetic interactions in human cancer
-      cells with RNAi and multiparametric phenotyping}\\ Christina Laufer, Bernd Fischer, Maximilian Billman, Wolfgang
-Huber, and Michael Boutros. Nature Methods (2013) 10(5):427-31 doi: 10.1038/nmeth.2436}}
-\author{Bernd Fischer\\[1em]European Molecular Biology Laboratory (EMBL),\\ Heidelberg, Germany\\
-\texttt{bernd.fischer@embl.de}}
+\title{\textsf{\textbf{Mapping genetic interactions in human cancer cells with RNAi and multiparametric phenotyping}\\
+ Christina Laufer, Bernd Fischer, Maximilian Billman, Wolfgang Huber, and Michael Boutros. Nature Methods (2013) 10(5):427-31 doi: 10.1038/nmeth.2436}}
+\author{Bernd Fischer\\[1em]European Molecular Biology Laboratory (EMBL),\\ Heidelberg, Germany\\ \texttt{bernd.fischer@embl.de}}
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
@@ -28,10 +28,12 @@ This document is associated with the R package \Rpackage{HD2013SGI},
 which contains the data and the R code for the statistical analysis
 presented in the paper \\\\
 \begin{center}
-\begin{minipage}[t]{0.8\textwidth}
-  Christina Laufer, Bernd Fischer, Maximilian Billman, Wolfgang
-Huber, and Michael Boutros:{\it Mapping genetic interactions in human cancer cells with RNAi and multiparametric phenotyping}
-Nature Methods (2013) 10(5):427-31 doi: 10.1038/nmeth.2436}. \\\\
+\begin{minipage}[t]{0.96\textwidth}
+\textit{Mapping genetic interactions in human cancer cells with RNAi and multiparametric phenotyping}\\
+Christina Laufer, Bernd Fischer, Maximilian Billman, Wolfgang Huber, and Michael Boutros\\
+Nature Methods (2013) 10(5):427-31\\ 
+doi: 10.1038/nmeth.2436.\\
+\\
 \end{minipage}
 \end{center}
 
