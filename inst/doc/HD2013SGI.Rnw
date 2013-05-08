@@ -2,10 +2,7 @@
 %\VignettePackage{HD2013SGI}
 \documentclass[10pt,a4paper,oneside]{article}
 
-\newcommand{\thetitle}{Mapping genetic interactions in human cancer cells with RNAi -- Laufer, Fischer et al., 2013}
-%\usepackage[pdftitle={\thetitle},pdfauthor={Bernd Fischer}]{whbiocvignette}
 \usepackage{whbiocvignette}
-
 \usepackage{calc}
 
 \newcommand{\mycaption}[1]{
@@ -17,7 +14,7 @@
 %\pagestyle{empty}
 \title{\textsf{\textbf{Mapping genetic interactions in human cancer
       cells with RNAi and multiparametric phenotyping}\\ Christina Laufer, Bernd Fischer, Maximilian Billman, Wolfgang
-Huber, and Michael Boutros (2013)}}
+Huber, and Michael Boutros. Nature Methods (2013) 10(5):427-31 doi: 10.1038/nmeth.2436}}
 \author{Bernd Fischer\\[1em]European Molecular Biology Laboratory (EMBL),\\ Heidelberg, Germany\\
 \texttt{bernd.fischer@embl.de}}
 
@@ -33,7 +30,8 @@ presented in the paper \\\\
 \begin{center}
 \begin{minipage}[t]{0.8\textwidth}
   Christina Laufer, Bernd Fischer, Maximilian Billman, Wolfgang
-Huber, and Michael Boutros (2013):{\it Mapping genetic interactions in human cancer cells with RNAi}. \\\\
+Huber, and Michael Boutros:{\it Mapping genetic interactions in human cancer cells with RNAi and multiparametric phenotyping}
+Nature Methods (2013) 10(5):427-31 doi: 10.1038/nmeth.2436}. \\\\
 \end{minipage}
 \end{center}
 
