@@ -3,7 +3,7 @@
 
 \subsection{Preliminaries}
 
-Load the package \Rpackage{HD2013SGI}.
+Load the package \Biocexptpkg{HD2013SGI}.
 <<convertData2>>=
 library("HD2013SGI")
 @

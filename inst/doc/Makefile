@@ -47,4 +47,5 @@ texclean:
 pdfclean:
 	make clean
 	rm -f Figures.R
+	rm -f sec*.R
 	rm -f *.pdf

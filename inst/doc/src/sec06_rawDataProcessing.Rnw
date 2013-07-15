@@ -3,7 +3,7 @@
 \subsection{Preliminaries}
 %------------------------------------------------------------
 
-Load the package \Rpackage{HD2013SGI}.
+Load the \Bioconductor{}-package \Biocexptpkg{HD2013SGI}.
 <<RawDataProcessing1>>=
 library("HD2013SGI")
 @

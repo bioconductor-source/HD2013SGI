@@ -2,30 +2,26 @@
 %\VignettePackage{HD2013SGI}
 \documentclass[10pt,a4paper,oneside]{article}
 
-\usepackage{whbiocvignette}
-\usepackage{calc}
+<<style, echo=FALSE, results=tex>>=
+  BiocStyle::latex()
+@
 
-\newcommand{\mycaption}[1]{
-  \begin{minipage}[t][10mm][b]{\linewidth}
-   \centering \huge\textbf{Figure #1}
-  \end{minipage}
-}
-
-\newcommand{\thetitle}{Mapping genetic interactions in human cancer cells} % used by whbiocvignette.sty
-
-%\pagestyle{empty}
 \title{\textsf{\textbf{Mapping genetic interactions in human cancer cells with RNAi and multiparametric phenotyping}\\
  Christina Laufer, Bernd Fischer, Maximilian Billman, Wolfgang Huber, and Michael Boutros. Nature Methods (2013) 10(5):427-31 doi: 10.1038/nmeth.2436}}
 \author{Bernd Fischer\\[1em]European Molecular Biology Laboratory (EMBL),\\ Heidelberg, Germany\\ \texttt{bernd.fischer@embl.de}}
+
+\renewcommand{\thetitle}{Mapping genetic interactions in human cancer
+  cells, Laufer, Fischer et al., 2013} % used by BiocStyle
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 \maketitle
 \tableofcontents
 
+
 \section{Introduction}
-This document is associated with the R package \Rpackage{HD2013SGI},
-which contains the data and the R code for the statistical analysis
+This document is associated with the \Bioconductor{} package \Rpackage{HD2013SGI},
+which contains the data and the \R{} code for the statistical analysis
 presented in the paper \\\\
 \begin{center}
 \begin{minipage}[t]{0.96\textwidth}
@@ -38,15 +34,15 @@ doi: 10.1038/nmeth.2436.\\
 \end{center}
 
 In Section~\ref{dataAccess}, the access to the data is
-described. Section ~\ref{Figures} shows the figures from the original
+described. Section~\ref{Figures} shows the figures from the original
 publication and links each figure to one of the subsequent sections,
 which describe the statistical analyses in the order in which they
-were executed. The R code within each section can be executed
+were executed. The \R{} code within each section can be executed
 independently of the other sections.  Intermediate results from each
-section are available in the form of R data objects.
+section are available in the form of \R{} data objects.
 
-To install the package \Rpackage{HD2013SGI}, please start a current version of
-R and type
+To install the \Biocexptpkg{HD2013SGI}, please start a current version of
+\R{} and type
 <<installation,eval=FALSE>>=
 source("http://bioconductor.org/biocLite.R")
 biocLite("HD2013SGI")
@@ -72,6 +68,15 @@ system.file(file.path("doc","src"),package="HD2013SGI")
 # the R scripts for single sections are in the folder:
 system.file(file.path("doc"),package="HD2013SGI")
 @ 
+
+\section{Session info}
+Here is the output of \Rfunction{sessionInfo} on the system on which this document was compiled:
+<<installation2,echo=FALSE,results=hide>>=
+library("HD2013SGI")
+@
+<<sessioninfo, results=tex, print=TRUE>>=
+toLatex(sessionInfo())
+@
 
 \bibliographystyle{unsrt}
 \bibliography{literature}

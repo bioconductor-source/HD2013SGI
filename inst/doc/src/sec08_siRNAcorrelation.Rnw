@@ -16,7 +16,7 @@ dir.create(file.path("result","data"), recursive=TRUE)
 
 $\pi$-scores were summarized over two replicates. Pearson correlation
 coefficients were computed for interaction profiles for each pair of
-siRNA and saved in the matric $C$.
+siRNA and saved in the matric \Robject{C}.
 %
 <<siRNAcorrelation2>>=
 PI = Interactions$piscore

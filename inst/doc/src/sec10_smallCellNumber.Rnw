@@ -129,7 +129,7 @@ logtrafo <- function(x,c) {
 %
 Transform all features with a generalized log transformation. A 3 percent quantile was
 used as an additive constant in the glog transformation. The same constant was used for the
-glog-transformation of all three data sets.
+\Rfunction{glog}-transformation of all three data sets.
 %
 <<SCNTransformationAndNormalization2>>=
 for (i in seq_len(dim(D)[5])) {

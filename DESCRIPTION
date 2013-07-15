@@ -8,5 +8,6 @@ Description: This package contains the experimental data and a complete executab
 License: Artistic-2.0
 LazyLoad: true
 Depends: RColorBrewer, gplots, geneplotter, splots, limma, vcd, LSD,EBImage
+Suggests: BiocStyle
 SystemRequirements: GNU make
 biocViews: ExperimentData,CellBasedAssays,NetworkAnalysis,QualityControl,CellBiology,Cancer,Colon

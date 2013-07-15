@@ -1,7 +1,7 @@
 
 \section{Figures from the paper}\label{Figures}
 In this section all figures from the original publication are shown. In the next
-sections the R code for the analysis is documented. A link to the respective 
+sections the \R{} code for the analysis is documented. A link to the respective 
 section in which the figure is generated is given for each figure.
 
 \begingroup
@@ -9,7 +9,7 @@ section in which the figure is generated is given for each figure.
 
 \begin{minipage}[t]{0.5\textwidth}
   \subsection*{Figure 1cd}
-  R code for this figure is documented in Section~\ref{exampleSingleKDPhenotypes}.
+  \R{} code for this figure is documented in Section~\ref{exampleSingleKDPhenotypes}.
   \begin{center}
     \includegraphics[width=0.4\textwidth]{result/Figures/singleKnockDown-SETD8.pdf}
     \includegraphics[width=0.4\textwidth]{result/Figures/singleKnockDown-TCF20.pdf}
@@ -17,7 +17,7 @@ section in which the figure is generated is given for each figure.
 \end{minipage}
 \begin{minipage}[t]{0.5\textwidth}
   \subsection*{Figure 2a}
-  R code for this figure is documented in Section~\ref{QControlFeatures}.
+  \R{} code for this figure is documented in Section~\ref{QControlFeatures}.
   \begin{center}
     \includegraphics[width=0.7\textwidth]{result/Figures/QCscatterFeaturesBetweenReplicates.pdf}
   \end{center}
@@ -25,7 +25,7 @@ section in which the figure is generated is given for each figure.
 
 \begin{minipage}[t]{0.33\textwidth}
   \subsection*{Figure 2bd}
-  R code in Section~\ref{QControlFeatures} and \ref{QControlGenes}.
+  \R{} code in Section~\ref{QControlFeatures} and \ref{QControlGenes}.
   \begin{center}
     \includegraphics[width=0.7\textwidth]{result/Figures/QCreproducibilityOfFeatures.pdf}
     \includegraphics[width=0.7\textwidth]{result/Figures/QCreproducibilityOfTargetsiRNA.pdf}
@@ -33,7 +33,7 @@ section in which the figure is generated is given for each figure.
 \end{minipage}
 \begin{minipage}[t]{0.33\textwidth}
   \subsection*{Figure 2c}
-  R code in Section \ref{QControlGenes}.
+  \R{} code in Section \ref{QControlGenes}.
   \begin{center}
     \vspace{5ex}
     \includegraphics[width=0.5\textwidth]{result/Figures/QCreproducibilityOfTargetsiRNAexample.pdf}
@@ -41,7 +41,7 @@ section in which the figure is generated is given for each figure.
 \end{minipage}
 \begin{minipage}[t]{0.33\textwidth}
   \subsection*{Figure 2e}
-  R code in Section \ref{smallCellNumber}.
+  \R{} code in Section \ref{smallCellNumber}.
   \begin{center}
     \vspace{10ex}
     \includegraphics[width=0.8\textwidth]{result/Figures/subsamplingNrInteractions.pdf}
@@ -50,7 +50,7 @@ section in which the figure is generated is given for each figure.
 
 \begin{minipage}[t]{0.5\textwidth}
   \subsection*{Figure 3ab}
-  R code for this figure is documented in Section \ref{exampleDoubleKDPhenotypes}.
+  \R{} code for this figure is documented in Section \ref{exampleDoubleKDPhenotypes}.
   \begin{center}
     \includegraphics[width=0.4\textwidth]{result/Figures/interaction-PHF16-SETD8.pdf}
     \includegraphics[width=0.4\textwidth]{result/Figures/interaction-SIN3A-RUVBL1.pdf}
@@ -58,7 +58,7 @@ section in which the figure is generated is given for each figure.
 \end{minipage}
 \begin{minipage}[t]{0.5\textwidth}
   \subsection*{Figure 3c}
-  R code for this figure is documented in Section \ref{OverlapOfInteractions}.
+  \R{} code for this figure is documented in Section \ref{OverlapOfInteractions}.
   \begin{center}
 <<VennDiagram>>=
 # load(file.path("result","Figures","Overlap.rda"))
@@ -69,7 +69,7 @@ section in which the figure is generated is given for each figure.
 
 \begin{minipage}[t]{0.5\textwidth}
   \subsection*{Figure 4ac}
-  R code for this figure is documented in Section \ref{heatmaps}.
+  \R{} code for this figure is documented in Section \ref{heatmaps}.
   \begin{center}
     \includegraphics[width=0.4\textwidth]{result/Figures/heatmapAll.pdf}
     \includegraphics[width=0.45\textwidth]{result/Figures/heatmapSelection.pdf}
@@ -77,7 +77,7 @@ section in which the figure is generated is given for each figure.
 \end{minipage}
 \begin{minipage}[t]{0.5\textwidth}
   \subsection*{Figure 4b}
-  R code for this figure is documented in Section \ref{siRNAcorrelation}.
+  \R{} code for this figure is documented in Section \ref{siRNAcorrelation}.
   \begin{center}
     \vspace{2ex}
     \includegraphics[width=0.9\textwidth]{result/Figures/multidensityWithinDesignCorrelation.pdf}
@@ -86,7 +86,7 @@ section in which the figure is generated is given for each figure.
 
 \begin{minipage}[t]{\textwidth}
   \subsection*{Figure S3}
-  R code for this figure is documented in Section \ref{featureSelection}.
+  \R{} code for this figure is documented in Section \ref{featureSelection}.
   \begin{center}
     \includegraphics[width=0.4\textwidth]{result/Figures/FeatureSelectionInformationgain.pdf}
     \includegraphics[width=0.4\textwidth]{result/Figures/FeatureSelectionRatioPositive.pdf}
@@ -95,7 +95,7 @@ section in which the figure is generated is given for each figure.
 
 \begin{minipage}[t]{\textwidth}
   \subsection*{Figure S4}
-  R code for this figure is documented in Section \ref{heatpairsFeatures}.
+  \R{} code for this figure is documented in Section \ref{heatpairsFeatures}.
   \begin{center}
     \includegraphics[width=0.6\textwidth]{result/Figures/heatpairsFeatures.png}
   \end{center}
@@ -103,7 +103,7 @@ section in which the figure is generated is given for each figure.
 
 \begin{minipage}[t]{0.5\textwidth}
   \subsection*{Figure S5}
-  R code for this figure is documented in Section \ref{screenplot}.
+  \R{} code for this figure is documented in Section \ref{screenplot}.
   \begin{center}
     \vspace{15ex}
     \includegraphics[width=1.0\textwidth]{result/Figures/screenPlot.pdf}
@@ -111,7 +111,7 @@ section in which the figure is generated is given for each figure.
 \end{minipage}
 \begin{minipage}[t]{0.5\textwidth}
   \subsection*{Figure S6}
-  R code for this figure is documented in Section \ref{distributionOfInteractions}.
+  \R{} code for this figure is documented in Section \ref{distributionOfInteractions}.
   \begin{center}
     \includegraphics[width=1.0\textwidth]{result/Figures/distributionOfInteractions.pdf}
   \end{center}
