@@ -1,14 +1,21 @@
 
 citEntry(entry="article",
-  title = "Mapping genetic interactions in human cancer cells with RNAi",
+  title = "Mapping genetic interactions in human cancer cells with RNAi and multiparametric phenotyping",
   author = personList( as.person("Christina Laufer"), 
 		       as.person("Bernd Fischer"),
 		       as.person("Maximilian Billmann"),
 		       as.person("Wolfgang Huber"),
 		       as.person("Michael Boutros")),
-  journal = "to appear",
+  journal = "Nature Methods",
+  volume = "10",
+  number = "5",
+  pages = "427--431",
   year = "2013",
+  publisher = "Nature Publishing Group",
+  doi = "10.1038/nmeth.2436"
+  url = "http://dx.doi.org/10.1038/nmeth.2436"
   textVersion = 
          paste("Christina Laufer, Bernd Fischer, Maximilian Billmann, Wolfgang Huber, and Michael Boutros (2013):", 
-               "Mapping genetic interactions in human cancer cells with RNAi.")
+               "Mapping genetic interactions in human cancer cells with RNAi and multiparametric phenotyping.",
+               "Nature Methods 10(5): 427-431","doi:10.1038/nmeth.2436")
 )
