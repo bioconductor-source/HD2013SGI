@@ -12,7 +12,7 @@ all:
 	$(R_HOME)/bin/R CMD Stangle src/sec12_scatterplots.Rnw
 	$(R_HOME)/bin/R CMD Stangle src/sec13_screenplots.Rnw
 	$(R_HOME)/bin/R CMD Stangle src/sec14_table.Rnw
-	echo 'Sweave("src/sec02_dataAccess.Rmw")' | R --slave --vanilla
+	echo 'Sweave("src/sec02_dataAccess.Rnw")' | R --slave --vanilla
 	echo 'Sweave("src/sec03_figures.Rnw")' | R --slave --vanilla
 	echo 'Sweave("src/sec04_imageProcessing.Rnw")' | R --slave --vanilla
 	echo 'Sweave("src/sec05_convertData.Rnw")' | R --slave --vanilla
