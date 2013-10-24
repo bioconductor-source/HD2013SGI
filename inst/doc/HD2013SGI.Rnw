@@ -78,7 +78,6 @@ library("HD2013SGI")
 toLatex(sessionInfo())
 @
 
-\bibliographystyle{unsrt}
 \bibliography{literature}
 
 \end{document}
