@@ -78,6 +78,12 @@ library("HD2013SGI")
 toLatex(sessionInfo())
 @
 
+<<bibstyle, results=tex, echo=FALSE>>=
+if ((R.version$major <= 3) & (R.version$minor < 1.0)) {
+  cat("\\bibliographystyle{unsrt}\n")
+}
+@
+
 \bibliography{literature}
 
 \end{document}
