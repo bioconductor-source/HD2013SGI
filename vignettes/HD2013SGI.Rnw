@@ -6,12 +6,14 @@
   BiocStyle::latex()
 @
 
-\title{\textsf{\textbf{Mapping genetic interactions in human cancer cells with RNAi and multiparametric phenotyping}\\
- Christina Laufer, Bernd Fischer, Maximilian Billman, Wolfgang Huber, and Michael Boutros. Nature Methods (2013) 10(5):427-31 doi: 10.1038/nmeth.2436}}
+\bioctitle[Mapping genetic interactions in human cancer
+cells, Laufer, Fischer et al., 2013]{\textsf{\textbf{Mapping
+      genetic interactions in human cancer cells with RNAi
+      and multiparametric phenotyping}\\
+    Christina Laufer, Bernd Fischer, Maximilian Billman,
+    Wolfgang Huber, and Michael Boutros. Nature Methods
+    (2013) 10(5):427-31 doi: 10.1038/nmeth.2436}}
 \author{Bernd Fischer\\[1em]European Molecular Biology Laboratory (EMBL),\\ Heidelberg, Germany\\ \texttt{bernd.fischer@embl.de}}
-
-\renewcommand{\thetitle}{Mapping genetic interactions in human cancer
-  cells, Laufer, Fischer et al., 2013} % used by BiocStyle
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
