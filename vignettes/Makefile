@@ -31,6 +31,7 @@ all:
 	$(R_HOME)/bin/R CMD bibtex HD2013SGI
 	$(R_HOME)/bin/R CMD pdflatex HD2013SGI.tex
 	$(R_HOME)/bin/R CMD pdflatex HD2013SGI.tex
+	make clean
 
 #	$(R_HOME)/bin/R -e "tools::buildVignette(file.path("src", "sec02_dataAccess.Rnw"),latex=FALSE,tangle=TRUE,quite=FALSE,clean=FALSE)"
 #	$(R_HOME)/bin/R -e "tools::buildVignette(file.path("src", "sec03_figures.Rnw"),latex=FALSE,tangle=TRUE,quite=FALSE,clean=FALSE)"
@@ -47,7 +48,6 @@ all:
 #	$(R_HOME)/bin/R -e "tools::buildVignette(file.path("src", "sec14_table.Rnw"),latex=FALSE,tangle=TRUE,quite=FALSE,clean=FALSE)"
 #	$(R_HOME)/bin/R -e "tools::buildVignette("HD2013SGI.Rnw",latex=TRUE,tangle=TRUE,quite=FALSE,clean=FALSE)"
 #	$(R_HOME)/bin/R CMD Sweave --pdf HD2013SGI.Rnw
-	make clean
 
 clean:
 	make texclean
