@@ -85,7 +85,7 @@ writeImage(ImgCy3,file.path("result","Figures","image-ImgCy3.jpg"),quality=98)
 We can combine the three channels to a single false color image using red for
 Actin, yellow for $\alpha$-Tubulin, and blue for the DAPI staining.
 <<imageProcessing5>>=
-ImgColor = Image(combine(ImgCy3,ImgFITC,ImgDAPI),colormode="Color")
+ImgColor = rgbImage(ImgCy3,ImgFITC,ImgDAPI)
 @
 <<imageProcessing6,eval=FALSE>>=
 display(ImgColor)
@@ -362,12 +362,12 @@ body segmentation on top of the original images.
   Imgout2 = paintObjects(nucleusRegions,ImgColor, col='#ff00ff')
   Imgout3 = paintObjects(cytoplasmRegions,
                          paintObjects(nucleusRegions,
-                                      Image(ImgDAPI,colormode="Color"),
+                                      rgbImage(ImgDAPI,ImgDAPI,ImgDAPI),
                                       col='#ff00ff'),
                          col='#ff0000')
   Imgout4 = paintObjects(cytoplasmRegions,
                          paintObjects(nucleusRegions,
-                                      Image(ImgCy3,colormode="Color"),
+                                      rgbImage(ImgCy3,ImgCy3,ImgCy3),
                                       col='#ff00ff'),
                          col='#ff0000')
   Imgout5 = paintObjects(cytoplasmRegions,
