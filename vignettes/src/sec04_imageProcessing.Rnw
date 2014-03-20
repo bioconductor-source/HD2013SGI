@@ -362,12 +362,12 @@ body segmentation on top of the original images.
   Imgout2 = paintObjects(nucleusRegions,ImgColor, col='#ff00ff')
   Imgout3 = paintObjects(cytoplasmRegions,
                          paintObjects(nucleusRegions,
-                                      rgbImage(ImgDAPI,ImgDAPI,ImgDAPI),
+                                      toRGB(ImgDAPI),
                                       col='#ff00ff'),
                          col='#ff0000')
   Imgout4 = paintObjects(cytoplasmRegions,
                          paintObjects(nucleusRegions,
-                                      rgbImage(ImgCy3,ImgCy3,ImgCy3),
+                                      toRGB(ImgCy3),
                                       col='#ff00ff'),
                          col='#ff0000')
   Imgout5 = paintObjects(cytoplasmRegions,
