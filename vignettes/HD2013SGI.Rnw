@@ -10,7 +10,7 @@
 cells, Laufer, Fischer et al., 2013]{\textsf{\textbf{Mapping
       genetic interactions in human cancer cells with RNAi
       and multiparametric phenotyping}\\
-    Christina Laufer, Bernd Fischer, Maximilian Billman,
+    Christina Laufer, Bernd Fischer, Maximilian Billmann,
     Wolfgang Huber, and Michael Boutros. Nature Methods
     (2013) 10(5):427-31 doi: 10.1038/nmeth.2436}}
 \author{Bernd Fischer\\[1em]European Molecular Biology Laboratory (EMBL),\\ Heidelberg, Germany\\ \texttt{bernd.fischer@embl.de}}
@@ -28,7 +28,7 @@ presented in the paper \\\\
 \begin{center}
 \begin{minipage}[t]{0.96\textwidth}
 \textit{Mapping genetic interactions in human cancer cells with RNAi and multiparametric phenotyping}\\
-Christina Laufer, Bernd Fischer, Maximilian Billman, Wolfgang Huber, and Michael Boutros\\
+Christina Laufer, Bernd Fischer, Maximilian Billmann, Wolfgang Huber, and Michael Boutros\\
 Nature Methods (2013) 10(5):427-31\\ 
 doi: 10.1038/nmeth.2436.\\
 \\
