@@ -46,8 +46,9 @@ section are available in the form of \R{} data objects.
 To install the \Biocexptpkg{HD2013SGI}, please start a current version of
 \R{} and type
 <<installation,eval=FALSE>>=
-source("http://bioconductor.org/biocLite.R")
-biocLite("HD2013SGI")
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("HD2013SGI")
 @
 
 \input{sec02_dataAccess.tex}
