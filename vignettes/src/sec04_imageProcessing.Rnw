@@ -401,7 +401,7 @@ writeImage(Imgout5,
   \centering
   \includegraphics[width=\textwidth]{result/Figures/image-seg-Imgout2.jpg}\\
   \Robject{nucleusRegions}\\
-  {\color{Red}Actin}/{\color{Green}$\alpha$-Tubulin}/{\color{Blue}DAPI}
+  {\color{red}Actin}/{\color{green}$\alpha$-Tubulin}/{\color{blue}DAPI}
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.195\textwidth}
@@ -422,7 +422,7 @@ writeImage(Imgout5,
   \centering
   \includegraphics[width=\textwidth]{result/Figures/image-seg-Imgout5.jpg}\\
   \Robject{cytoplasmRegions}\\
-  {\color{Red}Actin}/{\color{Green}$\alpha$-Tubulin}/{\color{Blue}DAPI}
+  {\color{red}Actin}/{\color{green}$\alpha$-Tubulin}/{\color{blue}DAPI}
 \end{minipage}\vspace{1.5ex}
 \par\endgroup
 
